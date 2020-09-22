@@ -1,15 +1,13 @@
 /* Parse la map */
-function parseFile() {
-	part = new Array();
-	tab = data_map.split(';');
-	map = new Array(tab.length);
-	for (let i = 0; i < tab.length; i++) {
-		map[i] = new Array(tab[0].length);
-	}
-	for (let n = 0; n < tab.length; n++) {
-		for (let i = 0; i < tab[0].length; i++) {
 
-			map[n][i] = new bloc(n, i, tab[n][i]);
+function parse_file() {
+	map = new Array(test.length);
+	for (let i = 0; i < test.length; i++) {
+		map[i] = new Array(test[0].length);
+	}
+	for (let n = 0; n < test.length; n++) {
+		for (let i = 0; i < test[0].length; i++) {
+			map[n][i] = new bloc(n, i, test[n][i]);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 
-var width = 800;
-var height = 600;
+var width = 1600;
+var height = 900;
 
 var config = {
     type: Phaser.AUTO,
@@ -12,31 +12,65 @@ var config = {
         update: update
     }
 };
-var data_map = "1111111111;1111111111;1101111211;1001112211;1101111211;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111;1111111111";
+var test = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+
 var game = new Phaser.Game(config);
 var map;
-var pers = [2];
+var nb_pers = 2;
+var id_pers = 0;
+var pers = [nb_pers];
 var act_pers;
 var hud;
+var largeur = 50;
+var hauteur = 50;
 
 function preload ()
 {
-    var pos = [[0, 0], [18, 9]];
-    parseFile();
+    var pos = [[5, 5], [9, 17]];
+    parse_file();
     load_hud(this);
     load_map(this);
-    for (i = 0; i < pers.length; i++)
-        pers[i] = new Perso("test" + i, pos[i][0], pos[i][1], 'perso', map, 3);
+    for (i = 0; i < nb_pers; i++)
+        pers[i] = new Perso("Perso " + i, pos[i][0], pos[i][1], 'perso', map[pos[i][1]][pos[i][0]], game);
 }
 
 function draw_map(game)
 {
-    var largeur = width / map[0].length;
-    var hauteur = (height / map.length) * 2.5;
     for (let x = 0; x < map.length; x++) {
         for (let y = 0; y < map[0].length; y++) {
             let bloc = map[x][y];
             bloc.draw_bloc(game, 50 + (largeur * 0.9) * bloc.posy + (largeur * 0.45) * (bloc.posx % 2), 100 + bloc.posx * hauteur * 0.225, largeur, hauteur);
+        }
+    }
+}
+
+function dist_r (obj) {
+    //console.log(Math.abs(act_pers.x - obj.x), Math.abs(act_pers.y - obj.y));
+    let po = 4;
+    for (let x = 0; x < test.length; x++) {
+		for (let y = 0; y < test[0].length; y++) {
+            obj_b = map[x][y];
+            nXDifferenceTiles = Math.abs(act_pers.x - obj_b.x);
+            nYDifferenceTiles = Math.abs(act_pers.y - obj_b.y);
+            if (nXDifferenceTiles <= 22.5 * po && nYDifferenceTiles <= 11.25 * po)
+                obj_b.img.tint = 0x0000FF;
         }
     }
 }
@@ -48,14 +82,9 @@ function click_function(game)
         if (gameObject.texture.key == "iso_2_pair" || gameObject.texture.key == "iso_2"){
             obj = map[gameObject.data[0]][gameObject.data[1]];
             dst = Math.sqrt(Math.pow(pointer.x - obj.x, 2) + Math.pow(pointer.y - obj.y, 2));
-            if (obj.x - pointer.x < 0 && obj.y - pointer.y > 28 && dst >= 35)
-            {
-                if (obj.posx % 2 == 1)
-                    obj = map[gameObject.data[0] - 1][gameObject.data[1] + 1];
-                else
-                    obj = map[gameObject.data[0] - 1][gameObject.data[1]];
-            }
-            else if (obj.x - pointer.x > 9 && obj.y - pointer.y > 28 && dst >= 35)
+            if (obj.x - pointer.x < 0 && obj.y - pointer.y > 0 && dst >= largeur / 2.15)
+                obj = map[gameObject.data[0] - 1][gameObject.data[1] + (obj.posx % 2)];
+            else if (obj.x - pointer.x > 0 && obj.y - pointer.y > 0 && dst >= largeur / 2.15)
             {
                 if (obj.posx % 2 == 1)
                     obj = map[gameObject.data[0] - 1][gameObject.data[1]];
@@ -63,7 +92,16 @@ function click_function(game)
                     obj = map[gameObject.data[0] - 1][gameObject.data[1] - 1];
             }
             if (obj && obj.type == 1)
-                act_pers.bloc = obj;
+            {
+                dist_r(obj);
+                obj.img.tint = 0x777777;
+                if (act_pers.move(obj))
+                {
+                    act_pers.pm -= 1;
+                    hud.refresh_hud();
+                    act_pers.init_bloc(act_pers.bloc, game.add);
+                }
+            }
         }
     });
 }
@@ -75,16 +113,13 @@ function draw_hud(game)
 }
 
 function init_pers(game) {
-    for (i = 0; i < pers.length; i++)
-    {
-        pers[i].get_pos(pers[i].bloc)
-        pers[i].img = game.add.image(pers[i].x, pers[i].y - 32.5, pers[i].file);
-    }
+    for (i = 0; i < nb_pers; i++)
+        pers[i].init_bloc(pers[i].bloc, game.add);
 }
 
 function create() {
-    draw_map(this);
     act_pers = pers[0];
+    draw_map(this);
     draw_hud(this);
     click_function(this);
     init_pers(this);
@@ -92,13 +127,4 @@ function create() {
 
 function update ()
 {
-    if (move_t_r(act_pers) || move_t_l(act_pers) || move_b_l(act_pers) || move_b_r(act_pers))
-    {
-        act_pers.pm -= 1;
-        hud.refresh_hud();
-        act_pers.get_pos(act_pers.bloc);
-        if (act_pers.img)
-            act_pers.img.destroy();
-        act_pers.img = this.add.image(act_pers.x, act_pers.y - 32.5, 'perso');
-    }
 }
