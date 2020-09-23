@@ -1,17 +1,3 @@
-/* Parse la map */
-
-function parse_file() {
-	map = new Array(test.length);
-	for (let i = 0; i < test.length; i++) {
-		map[i] = new Array(test[0].length);
-	}
-	for (let n = 0; n < test.length; n++) {
-		for (let i = 0; i < test[0].length; i++) {
-			map[n][i] = new bloc(n, i, test[n][i]);
-		}
-	}
-}
-/*END*/
 
 /* Charge les images */
 function load_hud(game) {
