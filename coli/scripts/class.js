@@ -5,6 +5,7 @@ class Archer{
 		this.spell1 = new Spell("Wob", "Archer_spell_1", 5, 10);
 		this.spell1_id = "Archer_spell_1";
 		this.bl_range = 0
+		this.act_spell;
 	}
 	load_class(game) {
 		this.spell1.load(game);
@@ -20,6 +21,13 @@ class Spell{
 		this.id = id;
 		this.po = po;
 		this.dmg = dmg;
+	}
+	action(obj) {
+		if (obj.isPers)
+		{
+			let enemy = obj.isPers;
+			enemy.pv -= this.dmg;
+		}
 	}
 	load(game){
 		this.img = game.load.image(this.id, 'asset/' + this.id + '.png');

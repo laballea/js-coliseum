@@ -64,11 +64,15 @@ function click_function(game)
             }
             if (obj && obj.type == 1)
             {
-                if (act_pers.move(obj) && !act_pers.class.bl_range)
+                if (act_pers.class.bl_range && act_pers.in_range(act_pers.class.act_spell.po, obj))
+                {
+                    act_pers.class.act_spell.action(obj);
+                }
+                else if (act_pers.move(obj))
                 {
                     act_pers.pm -= 1;
-                    hud.refresh_hud();
                     act_pers.init_bloc(act_pers.bloc, game.add);
+                    hud.refresh_hud();
                 }
             }
         }

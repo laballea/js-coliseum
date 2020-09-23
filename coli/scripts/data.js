@@ -53,24 +53,33 @@ class Perso{
         this.posx = posx;
         this.posy = posy;
         this.bloc = bl;
+        this.cible;
         this.file = file;
         this.pm = 3;
+        this.pv = 100;
         this.img = 0;
-	}
+    }
+    in_range(po, obj) {
+        let nXDifferenceTiles = Math.abs(act_pers.x - obj.x);
+        let nYDifferenceTiles = Math.abs(act_pers.y - obj.y);
+        if (nXDifferenceTiles <= largeur / 2 * po && nYDifferenceTiles <= hauteur / 4 * po)
+            return (obj);
+        else
+            return (undefined);
+    }
+
 	show_range (po) {
 		map.refresh_map();
 		for (let x = 0; x < map.largeur; x++) {
 			for (let y = 0; y < map.hauteur; y++) {
-				let obj_b = map.t_map[x][y];
-				let nXDifferenceTiles = Math.abs(act_pers.x - obj_b.x);
-				let nYDifferenceTiles = Math.abs(act_pers.y - obj_b.y);
-				if (nXDifferenceTiles <= largeur / 2 * po && nYDifferenceTiles <= hauteur / 4 * po)
-					obj_b.img.tint = 0x0000FF;
+                let obj;
+				if (obj = this.in_range(po, map.t_map[x][y]))
+					obj.img.tint = 0x0000FF;
 			}
 		}
 	}
     init_bloc (bloc, add){
-        this.bloc.isPers = 1;
+        this.bloc.isPers = this;
         this.y = bloc.y;
         this.x = bloc.x;
         if (this.img)
@@ -82,20 +91,19 @@ class Perso{
         if (this.posx - Math.abs((this.posy % 2 - 1)) == obj.rposx && this.posy - 1 == obj.rposy)
             return (1);
         else if (this.posx + (this.posy % 2) == obj.rposx && this.posy + 1 == obj.rposy)
-            return (1);
+            return (2);
         else if (this.posx - Math.abs((this.posy % 2 - 1)) == obj.rposx && this.posy + 1 == obj.rposy)
-            return (1);
+            return (3);
         else if (this.posx + (this.posy % 2) == obj.rposx && act_pers.posy - 1 == obj.rposy)
-            return (1);
+            return (4);
         else
             return (-1);
     }
     move(obj){
-		console.log(this.check_move(obj) != -1, act_pers.pm - 1 >= 0, obj.isPers == 0);
-        if (this.check_move(obj) != -1 && act_pers.pm - 1 >= 0 && obj.isPers == 0)
+        if (this.check_move(obj) != -1 && act_pers.pm - 1 >= 0 && obj.isPers == undefined)
         {
-            this.bloc.isPers = 0;
-            act_pers.bloc = obj;
+            this.bloc.isPers = undefined;
+            this.bloc = obj;
             this.posx = this.bloc.posy;
             this.posy = this.bloc.posx;
             return (1)
@@ -112,26 +120,17 @@ class HUD{
         this.game = game;
         }
     load_hud() {
-		this.spell1 = this.game.add.image(width * 0.12, height * 0.8, act_pers.class.spell1.id).setInteractive().on('pointerdown', () => {
-			if (act_pers.class.bl_range == 0)
-			{
-				act_pers.show_range(act_pers.class.spell1.po);
-				this.spell1.tint = 0xA0A0A0;
-				act_pers.class.bl_range = 1;
-			}
-			else
-			{
-				map.refresh_map();
-				act_pers.class.bl_range = 0;
-				this.spell1.tint = undefined;
-			}
-		});
-        this.h_pm = this.game.add.text(width * 0.05, height * 0.80, 'PM :' + act_pers.pm, {
+        this.h_name = this.game.add.text(width * 0.05, height * 0.77, act_pers.name, {
             font: "15px Arial",
             fill: "#008000",
             align: "center"
         });
-        this.h_name = this.game.add.text(width * 0.05, height * 0.77, act_pers.name, {
+        this.h_pv = this.game.add.text(width * 0.05, height * 0.785, 'PV :' + act_pers.pv, {
+            font: "15px Arial",
+            fill: "#008000",
+            align: "center"
+        });
+        this.h_pm = this.game.add.text(width * 0.05, height * 0.80, 'PM :' + act_pers.pm, {
             font: "15px Arial",
             fill: "#008000",
             align: "center"
@@ -144,10 +143,30 @@ class HUD{
             act_pers = pers[id_pers];
             this.refresh_hud();
         });
+        if (this.spell1 == undefined)
+        {
+            this.spell1 = this.game.add.image(width * 0.12, height * 0.8, act_pers.class.spell1.id).setInteractive().on('pointerdown', () => {
+                if (act_pers.class.bl_range == 0)
+                {
+                    act_pers.class.act_spell = act_pers.class.spell1;
+                    act_pers.show_range(act_pers.class.spell1.po);
+                    this.spell1.tint = 0xA0A0A0;
+                    act_pers.class.bl_range = 1;
+                }
+                else
+                {
+                    act_pers.class.act_spell = undefined;
+                    map.refresh_map();
+                    act_pers.class.bl_range = 0;
+                    this.spell1.tint = undefined;
+                }
+            });
+        }
     }
     refresh_hud() {
         this.h_pm.destroy();
         this.h_name.destroy();
+        this.h_pv.destroy();
         this.load_hud();
 
     }
@@ -156,7 +175,7 @@ class HUD{
 /* Class d'un Bloc */
 class bloc{
 	constructor(posx, posy, type){
-        this.isPers = 0;
+        this.isPers = undefined;
 		this.posx = posx;
         this.posy = posy;
         this.rposx = posy;
