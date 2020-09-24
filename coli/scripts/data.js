@@ -46,7 +46,7 @@ class Map{
 
 /* Class Perso*/
 class Perso{
-    constructor(name, posx, posy, file, bl, game, classe){
+    constructor(name, posx, posy, bl, game, classe){
 		this.class = classe;
         this.game = game;
         this.name = name;
@@ -54,20 +54,21 @@ class Perso{
         this.posy = posy;
         this.bloc = bl;
         this.cible;
-        this.file = file;
         this.pm = 3;
+        this.pa = 6;
         this.pv = 100;
         this.img = 0;
     }
     in_range(po, obj) {
+        let min = po[0];
+        let max = po[1];
         let nXDifferenceTiles = Math.abs(act_pers.x - obj.x);
         let nYDifferenceTiles = Math.abs(act_pers.y - obj.y);
-        if (nXDifferenceTiles <= largeur / 2 * po && nYDifferenceTiles <= hauteur / 4 * po)
+        if (nXDifferenceTiles <= largeur / 2 * max && nYDifferenceTiles <= hauteur / 4 * max && nXDifferenceTiles > largeur / 2 * min && nYDifferenceTiles >= hauteur / 4 * min)
             return (obj);
         else
             return (undefined);
     }
-
 	show_range (po) {
 		map.refresh_map();
 		for (let x = 0; x < map.largeur; x++) {
@@ -79,21 +80,32 @@ class Perso{
 		}
 	}
     init_bloc (bloc, add){
+        this.add = add;
         this.bloc.isPers = this;
         this.y = bloc.y;
         this.x = bloc.x;
         if (this.img)
+        {
+            this.flipX = this.img.flipX;
             this.img.destroy();
-        this.img = add.image(this.x, this.y - 32.5, 'perso');
+        }
+        this.img = add.image(this.x - 5, this.y - 60, this.class.name);
+        this.img.flipX = this.flipX;
     }
 
     check_move(obj){
         if (this.posx - Math.abs((this.posy % 2 - 1)) == obj.rposx && this.posy - 1 == obj.rposy)
             return (1);
         else if (this.posx + (this.posy % 2) == obj.rposx && this.posy + 1 == obj.rposy)
+        {
+            this.img.flipX = false;
             return (2);
+        }
         else if (this.posx - Math.abs((this.posy % 2 - 1)) == obj.rposx && this.posy + 1 == obj.rposy)
+        {
+            this.img.flipX = true;
             return (3);
+        }
         else if (this.posx + (this.posy % 2) == obj.rposx && act_pers.posy - 1 == obj.rposy)
             return (4);
         else
@@ -135,6 +147,11 @@ class HUD{
             fill: "#008000",
             align: "center"
         });
+        this.h_pa = this.game.add.text(width * 0.05, height * 0.80, 'PA :' + act_pers.pa, {
+            font: "15px Arial",
+            fill: "#008000",
+            align: "center"
+        });
         this.pass_tour = this.game.add.image(width * 0.065, height * 0.84, 'pass_t').setInteractive().on('pointerdown', () => {
             act_pers.pm = 3;
             id_pers += 1;
@@ -167,6 +184,7 @@ class HUD{
         this.h_pm.destroy();
         this.h_name.destroy();
         this.h_pv.destroy();
+        this.h_pa.destroy();
         this.load_hud();
 
     }
@@ -195,8 +213,17 @@ class bloc{
     }
     draw_bloc (game, posx, posy, largeur, hauteur) {
         this.x = posx;
-		this.y = posy;
-		//this.hb = game.add.polygon(167.5, 365, 6, 45).setInteractive();
+        this.y = posy;
+        let x = 22.5;
+        let y = 22.5;
+        var polygon = new Phaser.Geom.Polygon([
+            x, y - 50 * 0.5,
+            x + 50 * 0.43, y - 50 * 0.25,
+            x + 50 * 0.43, y + 50  * 0.25,
+            x, y + 50 * 0.5,
+            x - 50 * 0.48, y + 50  * 0.26,
+            x - 50 * 0.48, y - 50 * 0.26,
+        ]);
         if (this.posx % 2 == 0 && this.type != 0)
             this.file = "iso_2_pair";
         switch (this.type){
@@ -205,11 +232,13 @@ class bloc{
                 this.img.alpha = 0.7;
 				break ;
 			case 1:
-				this.img = game.add.image(posx, posy, this.file).setDisplaySize(largeur, hauteur).setInteractive();
+                this.img = game.add.image(posx, posy, this.file).setDisplaySize(largeur, hauteur);
+                this.img.setInteractive(polygon, Phaser.Geom.Polygon.Contains);
+                this.img.setInteractive();;
 				break ;
         }
         if (this.type != 0)
-			this.img.data = [this.posx, this.posy];
+			this.img.data = this;
     }
 }
 /*END*/

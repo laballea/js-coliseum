@@ -1,13 +1,14 @@
-class Archer{
+class Iop{
 	constructor(game) {
 		this.game = game;
-		this.name = "Archer";
-		this.spell1 = new Spell("Wob", "Archer_spell_1", 5, 10);
-		this.spell1_id = "Archer_spell_1";
+		this.name = "Iop";
+		this.spell1 = new Spell("CaC", "Iop_spell_1",0 , 1, 20, 3);
+		this.spell1_id = "Iop_spell_1";
 		this.bl_range = 0
 		this.act_spell;
 	}
 	load_class(game) {
+		this.img = game.load.image(this.name, 'asset/' + this.name + '.png');
 		this.spell1.load(game);
 	}
 	spell1() {
@@ -16,10 +17,12 @@ class Archer{
 }
 
 class Spell{
-	constructor(name, id, po, dmg) {
+	constructor(name, id,min_po, po, dmg, pa) {
 		this.name = name;
 		this.id = id;
-		this.po = po;
+		this.pa = pa;
+		this.po = [min_po, po];
+		this.min_po = min_po;
 		this.dmg = dmg;
 	}
 	load(game){
@@ -30,6 +33,7 @@ class Spell{
 		{
 			let enemy = obj.isPers;
 			enemy.pv -= this.dmg;
+			act_pers.pa -= this.pa;
 		}
 	}
 }
