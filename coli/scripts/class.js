@@ -22,14 +22,14 @@ class Spell{
 		this.po = po;
 		this.dmg = dmg;
 	}
+	load(game){
+		this.img = game.load.image(this.id, 'asset/' + this.id + '.png');
+	}
 	action(obj) {
 		if (obj.isPers)
 		{
 			let enemy = obj.isPers;
 			enemy.pv -= this.dmg;
 		}
-	}
-	load(game){
-		this.img = game.load.image(this.id, 'asset/' + this.id + '.png');
 	}
 }
