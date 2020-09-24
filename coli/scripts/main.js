@@ -28,8 +28,8 @@ var id_pers = 0;
 var pers = [,];
 var act_pers;
 var hud;
-var largeur = 90;
-var hauteur = 170;
+var largeur = 100;
+var hauteur = 100;
 
 function preload ()
 {
@@ -50,7 +50,7 @@ function draw_map(game)
     for (let x = 0; x < map.largeur; x++) {
         for (let y = 0; y < map.hauteur; y++) {
             let bloc = map.t_map[x][y];
-            bloc.draw_bloc(game, 50 + (largeur * 0.9) * bloc.posy + (largeur * 0.45) * (bloc.posx % 2), 100 + bloc.posx * hauteur * 0.225, largeur, hauteur);
+            bloc.draw_bloc(game, 50 + (largeur * 0.97) * bloc.posy + (largeur * 0.49) * (bloc.posx % 2), 100 + bloc.posx * hauteur * 0.33, largeur, hauteur);
         }
     }
 }
@@ -103,11 +103,37 @@ function init_pers(game) {
 }
 
 function create() {
-	act_pers = pers[0];
+	/*act_pers = pers[0];
     draw_map(this);
     draw_hud(this);
     click_function(this);
-	init_pers(this);
+    init_pers(this);*/
+    let x = 0;
+    let y =0;
+    var polygon = new Phaser.Geom.Polygon([
+        x, y - 50 * 0.5,
+        x + 50 * 0.43, y - 50 * 0.25,
+        x + 50 * 0.43, y + 50  * 0.25,
+        x, y + 50 * 0.5,
+        x - 50 * 0.48, y + 50  * 0.26,
+        x - 50 * 0.48, y - 50 * 0.26,
+    ]);
+    let xx = 100;
+    let yy =100;
+    var polygon = new Phaser.Geom.Polygon([
+        xx, yy - 50 * 0.5,
+        xx + 50 * 0.43, yy - 50 * 0.25,
+        xx + 50 * 0.43, yy + 50  * 0.25,
+        xx, yy + 50 * 0.5,
+        xx - 50 * 0.48, yy + 50  * 0.26,
+        xx - 50 * 0.48, yy - 50 * 0.26,
+    ]);
+    this.img = this.add.image(100, 100, "iso_2").setDisplaySize(largeur, hauteur);
+    graphics = this.add.graphics(0, 0);
+
+    graphics.lineStyle(5, 0xFF00FF, 1.0);
+    graphics.fillStyle(0xFFFFFF, 1.0);
+    graphics.fillPoints(polygon.points, true);
 }
 
 function update ()
