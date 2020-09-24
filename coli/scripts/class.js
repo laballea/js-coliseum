@@ -2,7 +2,7 @@ class Iop{
 	constructor(game) {
 		this.game = game;
 		this.name = "Iop";
-		this.spell1 = new Spell("CaC", "Iop_spell_1",0 , 1, 20, 3);
+		this.spell1 = new Spell("CaC", "Iop_spell_1", 0, 10, 20, 3);
 		this.spell1_id = "Iop_spell_1";
 		this.bl_range = 0
 		this.act_spell;
@@ -28,12 +28,17 @@ class Spell{
 	load(game){
 		this.img = game.load.image(this.id, 'asset/' + this.id + '.png');
 	}
-	action(obj) {
-		if (obj.isPers)
+	action(obj, add) {
+		if (act_pers.pa - this.pa >= 0)
 		{
-			let enemy = obj.isPers;
-			enemy.pv -= this.dmg;
+			if (obj.isPers)
+			{
+				let enemy = obj.isPers;
+				enemy.pv -= this.dmg;
+				aff.display_dmg(this.dmg, enemy, add);
+			}
 			act_pers.pa -= this.pa;
+			hud.refresh_hud();
 		}
 	}
 }

@@ -1,7 +1,7 @@
 /* Class Map */
 class Map{
 	constructor() {
-		this.largeur = 14;
+		this.largeur = 28;
 		this.hauteur = 14;
 		this.data_map = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -20,7 +20,18 @@ class Map{
 						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],						
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+						[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+					];
 		this.t_map;
 	}
 	parse_file() {
@@ -61,21 +72,31 @@ class Perso{
     }
     in_range(po, obj) {
         let min = po[0];
-        let max = po[1];
-        let nXDifferenceTiles = Math.abs(act_pers.x - obj.x);
-        let nYDifferenceTiles = Math.abs(act_pers.y - obj.y);
-        if (nXDifferenceTiles <= largeur / 2 * max && nYDifferenceTiles <= hauteur / 4 * max && nXDifferenceTiles > largeur / 2 * min && nYDifferenceTiles >= hauteur / 4 * min)
-            return (obj);
+		let max = po[1];
+		let d_x = 28;
+		let d_y = 22;
+		let nXDifferenceTiles = Math.abs(act_pers.x - obj.x);
+		let nYDifferenceTiles = Math.abs(act_pers.y - obj.y);
+		if (nXDifferenceTiles <= d_x * max && nYDifferenceTiles <= d_y * max)
+		{
+			if ((nXDifferenceTiles > d_x * min || nYDifferenceTiles > d_y * min))
+				return (obj);
+		}
         else
             return (undefined);
     }
-	show_range (po) {
+	show_range (po, move) {
 		map.refresh_map();
 		for (let x = 0; x < map.largeur; x++) {
 			for (let y = 0; y < map.hauteur; y++) {
                 let obj;
 				if (obj = this.in_range(po, map.t_map[x][y]))
-					obj.img.tint = 0x0000FF;
+				{
+					if (move)
+						obj.img.tint = 0x008000;
+					else
+						obj.img.tint = 0x0000FF;
+				}
 			}
 		}
 	}
@@ -89,7 +110,7 @@ class Perso{
             this.flipX = this.img.flipX;
             this.img.destroy();
         }
-        this.img = add.image(this.x - 5, this.y - 60, this.class.name);
+        this.img = add.image(this.x, this.y - hauteur * 0.45, this.class.name).setDisplaySize(89 * (largeur /89), 110 * (hauteur /89));
         this.img.flipX = this.flipX;
     }
 
@@ -126,40 +147,66 @@ class Perso{
 }
 /*END*/
 
+/* Class AFF */
+class AFF {
+	constructor(add) {
+		this.anim_play = false;
+		this.add = add;
+	}
+	display_dmg(damage, pers, game) {
+		if (this.dmg_txt)
+			this.dmg_txt.destroy();
+		this.begin = game.time.now;
+		this.px = 20;
+		this.dmg_txt = game.add.text(pers.x, pers.y - 50, "-" + damage, {
+				font: this.px + "px Arial",
+				fill: "#800000",
+				align: "center"
+			});
+		this.anim_play = true;
+	}
+	destroy_img() {
+		/*if (this.dmg_txt)
+			this.dmg_txt.destroy();*/
+		this.anim_play = false;
+	}
+}
+/* END */
+
 /* Class HUD */
 class HUD{
     constructor(game) {
         this.game = game;
-        }
+    }
     load_hud() {
-        this.h_name = this.game.add.text(width * 0.05, height * 0.77, act_pers.name, {
+        this.h_name = this.game.add.text(width * 0.05, height * 0.78, act_pers.name, {
             font: "15px Arial",
             fill: "#008000",
             align: "center"
         });
-        this.h_pv = this.game.add.text(width * 0.05, height * 0.785, 'PV :' + act_pers.pv, {
+        this.h_pv = this.game.add.text(width * 0.05, height * 0.80, 'PV :' + act_pers.pv, {
             font: "15px Arial",
             fill: "#008000",
             align: "center"
         });
-        this.h_pm = this.game.add.text(width * 0.05, height * 0.80, 'PM :' + act_pers.pm, {
+        this.h_pm = this.game.add.text(width * 0.05, height * 0.82, 'PM :' + act_pers.pm, {
             font: "15px Arial",
             fill: "#008000",
             align: "center"
         });
-        this.h_pa = this.game.add.text(width * 0.05, height * 0.80, 'PA :' + act_pers.pa, {
+        this.h_pa = this.game.add.text(width * 0.05, height * 0.84, 'PA :' + act_pers.pa, {
             font: "15px Arial",
             fill: "#008000",
             align: "center"
         });
-        this.pass_tour = this.game.add.image(width * 0.065, height * 0.84, 'pass_t').setInteractive().on('pointerdown', () => {
+        this.pass_tour = this.game.add.image(width * 0.065, height * 0.90, 'pass_t').setInteractive().on('pointerdown', () => {
             act_pers.pm = 3;
             id_pers += 1;
             if (id_pers == nb_pers)
                 id_pers = 0;
             act_pers = pers[id_pers];
             this.refresh_hud();
-        });
+		});
         if (this.spell1 == undefined)
         {
             this.spell1 = this.game.add.image(width * 0.12, height * 0.8, act_pers.class.spell1.id).setInteractive().on('pointerdown', () => {
@@ -173,8 +220,7 @@ class HUD{
                 else
                 {
                     act_pers.class.act_spell = undefined;
-                    map.refresh_map();
-                    act_pers.class.bl_range = 0;
+					act_pers.class.bl_range = 0;
                     this.spell1.tint = undefined;
                 }
             });
@@ -212,18 +258,18 @@ class bloc{
         }
     }
     draw_bloc (game, posx, posy, largeur, hauteur) {
-        this.x = posx;
+        this.x = width / 4 + posx;
         this.y = posy;
         let x = 22.5;
         let y = 22.5;
-        var polygon = new Phaser.Geom.Polygon([
-            x, y - 50 * 0.5,
-            x + 50 * 0.43, y - 50 * 0.25,
-            x + 50 * 0.43, y + 50  * 0.25,
-            x, y + 50 * 0.5,
-            x - 50 * 0.48, y + 50  * 0.26,
-            x - 50 * 0.48, y - 50 * 0.26,
-        ]);
+		var polygon = new Phaser.Geom.Polygon([
+			x, y - 17.5,
+			x + 50 * 0.5, y,
+			x + 50 * 0.5, y + 6,
+			x, y + 17.5 + 7,
+			x - 50 * 0.5, y + 6,
+			x - 50 * 0.5, y,
+		]);
         if (this.posx % 2 == 0 && this.type != 0)
             this.file = "iso_2_pair";
         switch (this.type){
@@ -232,7 +278,7 @@ class bloc{
                 this.img.alpha = 0.7;
 				break ;
 			case 1:
-                this.img = game.add.image(posx, posy, this.file).setDisplaySize(largeur, hauteur);
+                this.img = game.add.image(width / 4 + posx, posy, this.file).setDisplaySize(largeur, hauteur);
                 this.img.setInteractive(polygon, Phaser.Geom.Polygon.Contains);
                 this.img.setInteractive();;
 				break ;

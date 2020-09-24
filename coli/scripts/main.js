@@ -23,17 +23,20 @@ var config = {
 };
 var game = new Phaser.Game(config);
 var map;
+var aff;
 var nb_pers = 2;
 var id_pers = 0;
 var pers = [,];
 var act_pers;
 var hud;
-var largeur = 100;
-var hauteur = 100;
+var largeur = width / 28;
+var hauteur = height / 14;
+var time;
 
 function preload ()
 {
 	map = new Map();
+	aff =  new AFF(game.add);
     var pos = [[5, 5], [9, 9]];
 	map.parse_file();
     load_hud(this);
@@ -62,12 +65,11 @@ function click_function(game)
         if (gameObject.texture.key == "iso_2_pair" || gameObject.texture.key == "iso_2"){
             if (obj && obj.type == 1)
             {
-                if (act_pers.class.bl_range && act_pers.in_range(act_pers.class.act_spell.po, obj))
+				if (act_pers.class.bl_range && act_pers.in_range(act_pers.class.act_spell.po, obj))
+					act_pers.class.act_spell.action(obj, game);
+                else if (act_pers.move(obj) && !act_pers.class.bl_range)
                 {
-                    act_pers.class.act_spell.action(obj);
-                }
-                else if (act_pers.move(obj))
-                {
+					aff.dmg_txt.destroy();
                     act_pers.pm -= 1;
                     act_pers.init_bloc(act_pers.bloc, game.add);
                     hud.refresh_hud();
@@ -101,41 +103,38 @@ function init_pers(game) {
     for (i = 0; i < nb_pers; i++)
         pers[i].init_bloc(pers[i].bloc, game.add);
 }
+var txt = undefined;
+
+/*function display_time(time,game){
+	if (txt != undefined)
+		txt.destroy();
+	txt = game.add.text(width * 0.05, height * 0.9, Math.round(time.now * 0.001), {
+		font: "15px Arial",
+		fill: "#008000",
+		align: "center"
+	});
+}*/
 
 function create() {
-	/*act_pers = pers[0];
+	act_pers = pers[0];
     draw_map(this);
     draw_hud(this);
     click_function(this);
-    init_pers(this);*/
-    let x = 0;
-    let y =0;
-    var polygon = new Phaser.Geom.Polygon([
-        x, y - 50 * 0.5,
-        x + 50 * 0.43, y - 50 * 0.25,
-        x + 50 * 0.43, y + 50  * 0.25,
-        x, y + 50 * 0.5,
-        x - 50 * 0.48, y + 50  * 0.26,
-        x - 50 * 0.48, y - 50 * 0.26,
-    ]);
-    let xx = 100;
-    let yy =100;
-    var polygon = new Phaser.Geom.Polygon([
-        xx, yy - 50 * 0.5,
-        xx + 50 * 0.43, yy - 50 * 0.25,
-        xx + 50 * 0.43, yy + 50  * 0.25,
-        xx, yy + 50 * 0.5,
-        xx - 50 * 0.48, yy + 50  * 0.26,
-        xx - 50 * 0.48, yy - 50 * 0.26,
-    ]);
-    this.img = this.add.image(100, 100, "iso_2").setDisplaySize(largeur, hauteur);
-    graphics = this.add.graphics(0, 0);
-
-    graphics.lineStyle(5, 0xFF00FF, 1.0);
-    graphics.fillStyle(0xFFFFFF, 1.0);
-    graphics.fillPoints(polygon.points, true);
+	init_pers(this);
 }
+
+var begin;
 
 function update ()
 {
+	if (aff.anim_play)
+	{
+		aff.dmg_txt.y--;
+		if (this.time.now - aff.begin > 500)
+			aff.destroy_img();
+	}
+	if (act_pers.class.act_spell == undefined)
+	{
+		act_pers.show_range([0, act_pers.pm], 1);
+	}
 }
