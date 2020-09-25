@@ -53,7 +53,7 @@ function draw_map(game)
     for (let x = 0; x < map.largeur; x++) {
         for (let y = 0; y < map.hauteur; y++) {
             let bloc = map.t_map[x][y];
-            bloc.draw_bloc(game, 50 + (largeur * 0.97) * bloc.posy + (largeur * 0.49) * (bloc.posx % 2), 100 + bloc.posx * hauteur * 0.33, largeur, hauteur);
+            bloc.draw_bloc(game, 50 + (largeur * 0.97) * bloc.posy + (largeur * 0.49) * (bloc.posx % 2), 100 + bloc.posx * hauteur * 0.25, largeur, hauteur);
         }
     }
 }
@@ -69,26 +69,29 @@ function click_function(game)
 					act_pers.class.act_spell.action(obj, game);
                 else if (act_pers.move(obj) && !act_pers.class.bl_range)
                 {
-					aff.dmg_txt.destroy();
-                    act_pers.pm -= 1;
+					act_pers.pm -= 1;
                     act_pers.init_bloc(act_pers.bloc, game.add);
                     hud.refresh_hud();
                 }
             }
         }
 	});
-	game.input.on('gameobjectover',function click(pointer,gameObject){  
+	game.input.on('gameobjectover',function click(pointer,gameObject){ 
 		let obj = gameObject.data;
         if (gameObject.texture.key == "iso_2_pair" || gameObject.texture.key == "iso_2"){
+		{
+			obj.over = true;
             if (act_pers.class.bl_range && act_pers.in_range(act_pers.class.act_spell.po, obj))
-				obj.img.tint = 0xff0000;
+				obj.tint = 0xff0000;
+			else if (!act_pers.class.bl_range && act_pers.in_range([0, act_pers.pm], obj))
+				obj.tint = 0x00FF00;
+		}
         }
 	});
 	game.input.on('gameobjectout',function click(pointer,gameObject){
 		let obj = gameObject.data;
         if (gameObject.texture.key == "iso_2_pair" || gameObject.texture.key == "iso_2"){
-            if (act_pers.class.bl_range && act_pers.in_range(act_pers.class.act_spell.po, obj))
-				obj.img.tint = 0x0000FF;
+			obj.over =false;
         }
 	});
 }
@@ -103,7 +106,6 @@ function init_pers(game) {
     for (i = 0; i < nb_pers; i++)
         pers[i].init_bloc(pers[i].bloc, game.add);
 }
-var txt = undefined;
 
 /*function display_time(time,game){
 	if (txt != undefined)
@@ -123,8 +125,6 @@ function create() {
 	init_pers(this);
 }
 
-var begin;
-
 function update ()
 {
 	if (aff.anim_play)
@@ -133,8 +133,8 @@ function update ()
 		if (this.time.now - aff.begin > 500)
 			aff.destroy_img();
 	}
-	if (act_pers.class.act_spell == undefined)
-	{
-		act_pers.show_range([0, act_pers.pm], 1);
-	}
+	if (act_pers.class.bl_range)
+		act_pers.show_range(act_pers.class.act_spell.po, 0x0000FF);
+	else
+		act_pers.show_range([0, act_pers.pm], 0x008000);
 }

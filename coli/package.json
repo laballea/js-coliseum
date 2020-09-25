@@ -1,0 +1,22 @@
+{
+  "name": "coli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node scripts/main.js",
+	"dev": "nodemon scripts/main.js -e js, html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "phaser": "^3.24.1"
+  }
+}

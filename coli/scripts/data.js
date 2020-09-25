@@ -68,13 +68,13 @@ class Perso{
         this.pm = 3;
         this.pa = 6;
         this.pv = 100;
-        this.img = 0;
+		this.img = 0;
     }
     in_range(po, obj) {
         let min = po[0];
 		let max = po[1];
 		let d_x = 28;
-		let d_y = 22;
+		let d_y = 17;
 		let nXDifferenceTiles = Math.abs(act_pers.x - obj.x);
 		let nYDifferenceTiles = Math.abs(act_pers.y - obj.y);
 		if (nXDifferenceTiles <= d_x * max && nYDifferenceTiles <= d_y * max)
@@ -85,17 +85,17 @@ class Perso{
         else
             return (undefined);
     }
-	show_range (po, move) {
+	show_range (po, tint) {
 		map.refresh_map();
 		for (let x = 0; x < map.largeur; x++) {
 			for (let y = 0; y < map.hauteur; y++) {
-                let obj;
-				if (obj = this.in_range(po, map.t_map[x][y]))
+                let obj = this.in_range(po, map.t_map[x][y]);
+				if (obj)
 				{
-					if (move)
-						obj.img.tint = 0x008000;
+					if (obj.over == false)
+						obj.img.tint = tint;
 					else
-						obj.img.tint = 0x0000FF;
+						obj.img.tint = obj.tint;
 				}
 			}
 		}
@@ -111,9 +111,8 @@ class Perso{
             this.img.destroy();
         }
         this.img = add.image(this.x, this.y - hauteur * 0.45, this.class.name).setDisplaySize(89 * (largeur /89), 110 * (hauteur /89));
-        this.img.flipX = this.flipX;
+		this.img.flipX = this.flipX;
     }
-
     check_move(obj){
         if (this.posx - Math.abs((this.posy % 2 - 1)) == obj.rposx && this.posy - 1 == obj.rposy)
             return (1);
@@ -133,7 +132,9 @@ class Perso{
             return (-1);
     }
     move(obj){
-        if (this.check_move(obj) != -1 && act_pers.pm - 1 >= 0 && obj.isPers == undefined)
+		if (this.in_range([0, 1], obj) == undefined)
+			console.log("path_finding");
+        else if (this.check_move(obj) != -1 && act_pers.pm - 1 >= 0 && obj.isPers == undefined)
         {
             this.bloc.isPers = undefined;
             this.bloc = obj;
@@ -154,8 +155,7 @@ class AFF {
 		this.add = add;
 	}
 	display_dmg(damage, pers, game) {
-		if (this.dmg_txt)
-			this.dmg_txt.destroy();
+		this.destroy_img();
 		this.begin = game.time.now;
 		this.px = 20;
 		this.dmg_txt = game.add.text(pers.x, pers.y - 50, "-" + damage, {
@@ -166,9 +166,10 @@ class AFF {
 		this.anim_play = true;
 	}
 	destroy_img() {
-		/*if (this.dmg_txt)
-			this.dmg_txt.destroy();*/
-		this.anim_play = false;
+		if (this.dmg_txt)
+		{	this.dmg_txt.destroy();
+			this.anim_play = false;
+		}
 	}
 }
 /* END */
@@ -200,7 +201,8 @@ class HUD{
             align: "center"
         });
         this.pass_tour = this.game.add.image(width * 0.065, height * 0.90, 'pass_t').setInteractive().on('pointerdown', () => {
-            act_pers.pm = 3;
+			act_pers.pm = 3;
+			act_pers.pa = 6;
             id_pers += 1;
             if (id_pers == nb_pers)
                 id_pers = 0;
@@ -213,7 +215,6 @@ class HUD{
                 if (act_pers.class.bl_range == 0)
                 {
                     act_pers.class.act_spell = act_pers.class.spell1;
-                    act_pers.show_range(act_pers.class.spell1.po);
                     this.spell1.tint = 0xA0A0A0;
                     act_pers.class.bl_range = 1;
                 }
@@ -244,7 +245,9 @@ class bloc{
         this.posy = posy;
         this.rposx = posy;
         this.rposy = posx;
-        this.type = type;
+		this.type = type;
+		this.over = false;
+		this.tint = 0x008000;
 		switch (this.type){
 			case 0:
 				this.file = 'iso_0';
@@ -264,11 +267,11 @@ class bloc{
         let y = 22.5;
 		var polygon = new Phaser.Geom.Polygon([
 			x, y - 17.5,
-			x + 50 * 0.5, y,
-			x + 50 * 0.5, y + 6,
+			x + 52 * 0.5, y,
+			x + 52 * 0.5, y + 7,
 			x, y + 17.5 + 7,
-			x - 50 * 0.5, y + 6,
-			x - 50 * 0.5, y,
+			x - 52 * 0.5, y + 7,
+			x - 52 * 0.5, y,
 		]);
         if (this.posx % 2 == 0 && this.type != 0)
             this.file = "iso_2_pair";
