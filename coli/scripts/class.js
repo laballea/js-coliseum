@@ -4,7 +4,7 @@ class Iop{
 		this.name = "Iop";
 		this.spell1 = new Spell("CaC", "Iop_spell_1", 0, 1, 20, 3);
 		this.spell1_id = "Iop_spell_1";
-		this.bl_range = 0
+		this.bl_range = 0;
 		this.act_spell;
 	}
 	load_class(game) {
