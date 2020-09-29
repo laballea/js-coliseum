@@ -21,7 +21,17 @@ class Map{
 					];
 		this.t_map;
 		this.parse_file();
-	}
+    }
+    reset_score(){
+        for (let n = 0; n < this.largeur; n++) {
+			for (let i = 0; i < this.hauteur; i++) {
+				this.t_map[n][i].gScore = Infinity;
+                this.t_map[n][i].fScore = Infinity;
+				this.t_map[n][i].cameFrom = undefined;
+                
+			}
+		}
+    }
 	parse_file() {
 		this.t_map = new Array(this.largeur);
 		for (let i = 0; i < this.largeur; i++) {

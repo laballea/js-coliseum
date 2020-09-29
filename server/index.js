@@ -31,4 +31,7 @@ function load_game(socket) {
 function newJoin (socket, game, id)
 {
 	socket.emit('stateChanged', game, id, 0);
+	socket.on('previsu', (data) =>{
+		socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));
+	});
 }

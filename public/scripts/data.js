@@ -1,5 +1,3 @@
-
-
 /* Pathfinding */
 class pf{
     constructor (map) {

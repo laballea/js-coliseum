@@ -1,6 +1,7 @@
 class pf{
-    constructor (map) {
+    constructor (map, pm) {
         this.map = map;
+        this.pm = pm;
     }
     get_near(y, x) {
         if (y < 0 || y >= this.map.largeur)
@@ -55,10 +56,10 @@ class pf{
         let cost = nXDifferenceTiles + nYDifferenceTiles;
         return (cost);
     }
-    get_index(openSet, item) {
-        for (let i = 0; i < openSet.length; i++)
+    get_index(openset, item) {
+        for (let i = 0; i < openset.length; i++)
         {
-            if (openSet[i] == item)
+            if (openset[i] == item)
                 return (i);
         }
         return (undefined);
@@ -87,11 +88,14 @@ class pf{
         let tmp = end;
         while (tmp.cameFrom != undefined)
         {
-            path.push(tmp);
+            path.push([tmp.posx, tmp.posy]);
             tmp = tmp.cameFrom;
         }
         this.map.reset_score();
-        return (path.reverse());
+        if (path.length <= this.pm)
+            return (path.reverse());
+        else
+            return (undefined)
     }
     pathfinding(obj, player) {
         let start = player.bloc;
@@ -111,7 +115,7 @@ class pf{
             openset.splice(this.get_index(openset, current), 1);
             closedset.push(current);
             if (current.posx == obj.posx && current.posy == obj.posy)
-                return (this.get_path(obj));
+                return (this.get_path(current));
             else
             {
                 neighbor = this.get_neighbor(current);
@@ -148,9 +152,11 @@ class Player {
 		this.classe = classe;
 		this.pseudo = pseudo;
 		this.pos = pos;
-		this.id = id;
-		this.bloc = map.t_map[pos[0]][pos[1]];
-		this.pf = new pf();
+        this.id = id;
+        this.bloc = map.t_map[pos[0]][pos[1]];
+        this.bloc.empty = false;
+        this.pm = 6;
+        this.pf = new pf(map, this.pm);
 	}
 	move (x, y) {
 		this.pos = [x, y];

@@ -6,11 +6,11 @@ class Map{
         this.data_map = state.map.data_map;
         this.t_map = state.map.t_map;
 		this.state = state;
-		this.img_bloc = [];
+		this.img_bloc = new Array(this.largeur);
+		for (let i = 0; i < this.largeur; i++)
+			this.img_bloc[i] = new Array(this.hauteur);
 	}
     draw_bloc (game, posx, posy, largeur, hauteur, x, y) {
-        this.x = posx;
-		this.y = posy;
 		let bloc = this.t_map[x][y];
         let xx = 22.5;
 		let yy = 22.5;
@@ -43,7 +43,7 @@ class Map{
 		}
 		if (this.img != undefined)
 			game.imageGroup.add(this.img);
-		this.img_bloc.push(new Bloc(bloc, this.img, this.img_bloc.length));
+		this.img_bloc[bloc.posx][bloc.posy] = new Bloc(bloc, this.img, posx, posy);
     }
     draw_map(game)
     {
@@ -63,18 +63,19 @@ class Map{
                 let text1 = game.add.text(centerX + tx - 25, centerY + ty - 10, `${x},${y}`);
                 game.imageGroup.add(text1);
             }
-        }
+		}
     }
 }
 /*END*/
 
 /* Class d'un Bloc */
 class Bloc{
-	constructor (bloc, img, len) {
-		this.bloc = bloc;
+	constructor (data, img, posx, posy) {
+		this.data = data;
 		this.img = img;
-		if (bloc.type != 0)
-			this.img.data = len;
+		if (data.type != 0)
+			this.img.data = this;
+		this.game_pos = [posx, posy];
 	}
 }
 /*END*/
