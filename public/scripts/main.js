@@ -24,20 +24,24 @@ class Main extends Phaser.Scene {
                 this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
             }
         })
+        this.socket.on('change_pos', (state, id) =>{
+            let player = state.players[id];
+            this.player.re_draw(this, this.map.img_bloc[player.pos[0]][player.pos[1]]);
+        })
     }
 	click_function(){
 		this.input.on('gameobjectdown', (pointer,gameObject) =>{
             let bloc = gameObject.data;
             if (this.path.length != 0)
-            {
-                this.player.re_draw(this, this.map.img_bloc[bloc.data.posx][bloc.data.posy]);
-                this.map.img_bloc[bloc.data.posx][bloc.data.posy].img.tint = 0x770000;
-            }
+                this.socket.emit('move', this.path);   
         });
         this.input.on('gameobjectover', (pointer,gameObject) =>{
             let bloc = gameObject.data;
             if (this.path.length == 0)
-			    this.socket.emit("previsu", bloc.data)
+            {
+                console.log("ok")
+                this.socket.emit("previsu", bloc.data)
+            }
         });
         this.input.on('gameobjectout', (pointer,gameObject) =>{
             if (this.path.length != 0)

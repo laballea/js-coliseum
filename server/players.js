@@ -1,7 +1,6 @@
 class pf{
-    constructor (map, pm) {
+    constructor (map) {
         this.map = map;
-        this.pm = pm;
     }
     get_near(y, x) {
         if (y < 0 || y >= this.map.largeur)
@@ -83,7 +82,7 @@ class pf{
         }
         return (0);
     }
-    get_path(end) {
+    get_path(end, player) {
         let path = [];
         let tmp = end;
         while (tmp.cameFrom != undefined)
@@ -92,7 +91,7 @@ class pf{
             tmp = tmp.cameFrom;
         }
         this.map.reset_score();
-        if (path.length <= this.pm)
+        if (path.length <= player.pm)
             return (path.reverse());
         else
             return (undefined)
@@ -105,7 +104,7 @@ class pf{
         let closedset = new Array();
         openset[0] = start;
         let n = -1;
-        let max = player.pm * player.pm;
+        let max = 25;
         let current;
         let neighbor;
         while (1 && ++n < max)
@@ -115,7 +114,7 @@ class pf{
             openset.splice(this.get_index(openset, current), 1);
             closedset.push(current);
             if (current.posx == obj.posx && current.posy == obj.posy)
-                return (this.get_path(current));
+                return (this.get_path(current, player));
             else
             {
                 neighbor = this.get_neighbor(current);
@@ -156,10 +155,15 @@ class Player {
         this.bloc = map.t_map[pos[0]][pos[1]];
         this.bloc.empty = false;
         this.pm = 6;
-        this.pf = new pf(map, this.pm);
+        this.pf = new pf(map);
+        this.map = map;
 	}
 	move (x, y) {
-		this.pos = [x, y];
+        this.bloc.empty = true;
+        this.pos = [x, y];
+        this.bloc = this.map.t_map[x][y];
+        this.bloc.empty = false;
+        this.pm -= 1;
 	}
 }
 

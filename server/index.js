@@ -34,4 +34,14 @@ function newJoin (socket, game, id)
 	socket.on('previsu', (data) =>{
 		socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));
 	});
+	socket.on('move', (path) =>{
+		var i = 0;
+		var intID = setInterval(() =>{
+			game.players[id].move(path[i].data.posx, path[i].data.posy);
+			socket.emit('change_pos', game, id);
+			if (i == path.length - 1)
+				clearInterval(intID);
+			i++;
+		}, 100);
+	});
 }
