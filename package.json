@@ -1,0 +1,30 @@
+{
+  "name": "koli_rush",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "phaser": "^3.24.1",
+    "phaser3-plugin-isometric": "^0.0.7",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon server/index.js -e js,html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nywgates/Koli.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nywgates/Koli/issues"
+  },
+  "homepage": "https://github.com/Nywgates/Koli#readme",
+  "keywords": [],
+  "description": ""
+}
