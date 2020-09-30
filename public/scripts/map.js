@@ -23,7 +23,7 @@ class Map{
 			xx - 52 * 0.5, yy + 7,
 			xx - 52 * 0.5, yy,
 		]);
-        if (bloc.posx % 2 == 0 && bloc.type != 0)
+        if ((bloc.posx + bloc.posy) % 2 == 0 && bloc.type != 0)
 			file = "iso_2_pair";
 		else
 			file = "iso_2";
@@ -31,11 +31,13 @@ class Map{
 			case 2:
                 this.img = game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur).setInteractive();
 				this.img.alpha = 0.7;
+				this.img.type = 1;
 				break ;
 			case 1:
                 this.img = game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur);
                 this.img.setInteractive(polygon, Phaser.Geom.Polygon.Contains);
 				this.img.setInteractive();
+				this.img.type = 1;
 				break ;
 			case 0:
 				this.img = undefined;
@@ -60,8 +62,8 @@ class Map{
                 let tx = (this.largeur * tileWidthHalf) + (x - y) * tileWidthHalf;
 				let ty = y * tileHeightQuarter + x * tileHeightQuarter;
                 this.draw_bloc(game, centerX + tx, centerY + ty, largeur, hauteur, x, y);
-                let text1 = game.add.text(centerX + tx - 25, centerY + ty - 10, `${x},${y}`);
-                game.imageGroup.add(text1);
+                //let text1 = game.add.text(centerX + tx - 25, centerY + ty - 10, `${x},${y}`);
+                //game.imageGroup.add(text1);
             }
 		}
     }

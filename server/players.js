@@ -148,13 +148,19 @@ class Player {
 	rank;
 
 	constructor(classe, pseudo, pos, id, map) {
-		this.classe = classe;
+		switch (classe){
+			case 'Iop':
+				this.classe = new Iop();
+		}
 		this.pseudo = pseudo;
 		this.pos = pos;
-        this.id = id;
+		this.id = id;
         this.bloc = map.t_map[pos[0]][pos[1]];
-        this.bloc.empty = false;
-        this.pm = 6;
+		this.bloc.empty = false;
+		this.save = [500, 5, 6];
+		this.pv = this.save[0];
+		this.pm = this.save[1];
+		this.pa = this.save[2];
         this.pf = new pf(map);
         this.map = map;
 	}
@@ -164,6 +170,11 @@ class Player {
         this.bloc = this.map.t_map[x][y];
         this.bloc.empty = false;
         this.pm -= 1;
+	}
+	reset (){
+		this.pv = this.save[0];
+		this.pm = this.save[1];
+		this.pa = this.save[2];
 	}
 }
 

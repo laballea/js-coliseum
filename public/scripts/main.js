@@ -3,7 +3,8 @@ class Main extends Phaser.Scene {
     socket
     map;
     player;
-    path = [];
+	path = [];
+	hud;
     preload () {
         this.imageGroup = this.add.group();
         load_hud(this);
@@ -14,7 +15,7 @@ class Main extends Phaser.Scene {
         this.socket = io();
         this.socket.on('stateChanged', (state, id, current) =>{
             this.build(state, id, current);
-        })
+        });
         this.socket.on('end_previsu', (path) =>{
             if (path == undefined)
                 return ;
@@ -23,39 +24,58 @@ class Main extends Phaser.Scene {
                 this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
                 this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
             }
-        })
+        });
         this.socket.on('change_pos', (state, id) =>{
-            let player = state.players[id];
-            this.player.re_draw(this, this.map.img_bloc[player.pos[0]][player.pos[1]]);
-        })
+			let tmp = state.players[id];
+			if (id == this.player.id)
+			{
+				this.player.re_draw(this, this.map.img_bloc[tmp.pos[0]][tmp.pos[1]]);
+				this.hud.re_draw(state, this);
+			}
+			else
+				this.player.re_draw_enemy(state, this);
+		});
+		this.socket.on('new_log', (state) =>{
+			this.player.re_draw_enemy(state, this);
+		});
+		this.socket.on('end_tour', (state, id)=>{
+			this.hud.re_draw(state, this);
+		})
     }
 	click_function(){
 		this.input.on('gameobjectdown', (pointer,gameObject) =>{
-            let bloc = gameObject.data;
-            if (this.path.length != 0)
-                this.socket.emit('move', this.path);   
+			if (gameObject.type == 1)
+            {
+				if (this.path.length != 0)
+					this.socket.emit('move', this.path);
+			}
         });
         this.input.on('gameobjectover', (pointer,gameObject) =>{
-            let bloc = gameObject.data;
-            if (this.path.length == 0)
+			if (gameObject.type == 1)
             {
-                console.log("ok")
-                this.socket.emit("previsu", bloc.data)
-            }
+				let bloc = gameObject.data;
+				if (this.path.length == 0)
+					this.socket.emit("previsu", bloc.data);
+			}
         });
         this.input.on('gameobjectout', (pointer,gameObject) =>{
-            if (this.path.length != 0)
-            {
-                for (let i = 0; i < this.path.length; i++)
-                    this.path[i].img.tint = undefined;
-                this.path = [];
-                }
-            });
+			if (gameObject.type == 1)
+			{
+				if (this.path.length != 0)
+				{
+					for (let i = 0; i < this.path.length; i++)
+						this.path[i].img.tint = undefined;
+					this.path = [];
+					}
+				}
+			});
 	}
-    build (state, id, current) {
+    build(state, id) {
 		this.map = new Map(state);
 		this.map.draw_map(this);
 		this.player = new Perso(state, id, this);
+		this.hud = new HUD(state, id);
+		this.hud.draw_hud(this);
 		this.click_function();
     }
     update ()
