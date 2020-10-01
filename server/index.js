@@ -4,7 +4,6 @@ const server = app.listen(8000)
 const io = require('socket.io')(server)
 const { Game } = require('./game')
 const { Map } = require('./case')
-//const players = require('./players')
 const { Player } = require('./players')
 
 var nb_player = 0;
@@ -14,6 +13,9 @@ var board = new Map();
 app.use(express.static('public'))
 io.on('connection', (socket) => {
 	console.log('a user connected')
+	/*setInterval(() =>{
+		console.log(socket.disconnected);
+	}, 1000);*/
 	socket.name= "User" + nb_player;
 	load_game(socket)
 });
@@ -33,7 +35,12 @@ function newJoin (socket, game, id)
 	if (id >= 1)
 		io.emit("new_log", game);
 	socket.on('previsu', (data) =>{
-		socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));
+		if (game.players[id].classe.act_spell == undefined)
+			socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));
+	});
+	socket.on('spell_press', (spell_id) =>{
+		socket.emit('preshow_range', game.players[id].classe.spells[spell_id].pre_show(game.players[id]),
+			game.players[id].classe.spells[spell_id].al_show);
 	});
 	socket.on('move', (path) =>{
 		if (game.current_player == game.players[id])

@@ -29,8 +29,10 @@ class HUD{
         });
         this.pass_tour = game.add.image(this.state.windowX * 0.065, this.state.windowY * 0.90, 'pass_t').setInteractive().on('pointerdown', () => {
 			game.socket.emit("passe_tour", this.id);
-        });
-		this.spell1 = game.add.image(this.state.windowX * 0.12, this.state.windowY * 0.8, player.classe.spell1_id).setInteractive().on('pointerdown', () => {
+		});
+		console.log(player.classe.spells);
+		this.spell1 = game.add.image(this.state.windowX * 0.12, this.state.windowY * 0.8, player.classe.spells[0].file).setInteractive().on('pointerdown', () => {
+			game.socket.emit("spell_press", player.classe.spells[0].id);
 		});
         /*this.game.imageGroup.add(this.pass_tour)
         this.game.imageGroup.add(this.h_pa);

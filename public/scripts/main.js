@@ -41,6 +41,17 @@ class Main extends Phaser.Scene {
 		this.socket.on('end_tour', (state, id)=>{
 			this.hud.re_draw(state, this);
 		})
+		this.socket.on('preshow_range', (data, al_show) =>{
+			let range = data[0];
+			let see_range = data[1];
+			if (see_range == undefined || range == undefined)
+				return ;
+			console.log(al_show);
+			if (al_show == true)
+				this.map.draw_range(range, see_range, 0x000077);
+			else
+				this.map.draw_range(range, see_range, undefined);
+		})
     }
 	click_function(){
 		this.input.on('gameobjectdown', (pointer,gameObject) =>{

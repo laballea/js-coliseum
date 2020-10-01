@@ -29,7 +29,8 @@ class Map{
 			file = "iso_2";
         switch (bloc.type){
 			case 2:
-                this.img = game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur).setInteractive();
+				game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur);
+				this.img = game.add.image(posx, posy - 10, file).setDisplaySize(largeur, hauteur);
 				this.img.alpha = 0.7;
 				this.img.type = 1;
 				break ;
@@ -66,7 +67,17 @@ class Map{
                 //game.imageGroup.add(text1);
             }
 		}
-    }
+	}
+	draw_range(range, see_range, tint){
+		for (let i = 0; i < range.length; i++){
+			if (this.img_bloc[range[i].posx][range[i].posy].img != undefined)
+					this.img_bloc[range[i].posx][range[i].posy].img.tint = (isNaN(tint * 95096) ? undefined : tint * 95096);
+		}
+		for (let i =0; i < see_range.length; i++){
+			if (this.img_bloc[see_range[i].posx][see_range[i].posy].img != undefined)
+				this.img_bloc[see_range[i].posx][see_range[i].posy].img.tint = tint;
+		}
+	}
 }
 /*END*/
 
