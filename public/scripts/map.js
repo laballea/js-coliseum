@@ -31,7 +31,6 @@ class Map{
 			case 2:
 				game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur);
 				this.img = game.add.image(posx, posy - 10, file).setDisplaySize(largeur, hauteur);
-				this.img.alpha = 0.7;
 				this.img.type = 1;
 				break ;
 			case 1:

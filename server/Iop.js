@@ -44,7 +44,7 @@ class Spell{
 			pos_current = [pos_current[0] + vect[0] / 50, pos_current[1] + vect[1] / 50];
 			let pos_current_obj = [Math.round(pos_current[0]), Math.round(pos_current[1])];
 			let bloc = player.map.t_map[pos_current_obj[0]][pos_current_obj[1]];
-			if (bloc.type == 2)
+			if (bloc.type == 2 || (bloc.isPers != undefined && bloc != player.bloc))
 				return (false);
 		}
 		return (true);

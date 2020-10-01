@@ -46,7 +46,6 @@ class Main extends Phaser.Scene {
 			let see_range = data[1];
 			if (see_range == undefined || range == undefined)
 				return ;
-			console.log(al_show);
 			if (al_show == true)
 				this.map.draw_range(range, see_range, 0x000077);
 			else

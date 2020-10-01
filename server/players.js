@@ -1,8 +1,9 @@
 const { Iop } = require('./Iop.js')
 
 class pf{
-    constructor (map) {
+    constructor (map, id) {
         this.map = map;
+        this.id = id;
     }
     get_near(y, x) {
         if (y < 0 || y >= this.map.largeur)
@@ -10,7 +11,7 @@ class pf{
         if (x < 0 || x >= this.map.hauteur)
             return (undefined);
         let obj = this.map.t_map[y][x];
-        if (obj.empty == true && obj.isPers == undefined)
+        if (obj.empty == true && (obj.isPers == undefined))
             return (this.map.t_map[y][x]);
         else
             return (undefined);
@@ -158,12 +159,13 @@ class Player {
 		this.pos = pos;
 		this.id = id;
         this.bloc = map.t_map[pos[0]][pos[1]];
-		this.bloc.empty = false;
+        this.bloc.empty = false;
+        this.bloc.isPers = this.id;
 		this.save = [500, 5, 6];
 		this.pv = this.save[0];
 		this.pm = this.save[1];
 		this.pa = this.save[2];
-        this.pf = new pf(map);
+        this.pf = new pf(map, id);
         this.map = map;
 	}
 	in_range(po, obj) {
@@ -189,10 +191,10 @@ class Player {
 		return (path);
     }
 	move (x, y) {
-        this.bloc.empty = true;
+        this.bloc.isPers = undefined;
         this.pos = [x, y];
         this.bloc = this.map.t_map[x][y];
-        this.bloc.empty = false;
+        this.bloc.isPers = this.id;
         this.pm -= 1;
 	}
 	reset (){
