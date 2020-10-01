@@ -22,8 +22,14 @@ class Spell{
 		this.dmg = dmg;
 		this.al_show  = false;
 	}
-	do(){
-		console.log("i attack !")
+	do(player, enemy){
+
+		if (player.pa - this.pa >= 0)
+		{
+			if (enemy != undefined)
+				enemy.pv -= this.dmg;
+			player.pa -= this.pa;
+		}
 	}
 	in(lst, obj) {
         let i = 0;
@@ -44,6 +50,8 @@ class Spell{
 			pos_current = [pos_current[0] + vect[0] / 50, pos_current[1] + vect[1] / 50];
 			let pos_current_obj = [Math.round(pos_current[0]), Math.round(pos_current[1])];
 			let bloc = player.map.t_map[pos_current_obj[0]][pos_current_obj[1]];
+			if (bloc.isPers != undefined && bloc != player.bloc && bloc == obj)
+				return (true);
 			if (bloc.type == 2 || (bloc.isPers != undefined && bloc != player.bloc))
 				return (false);
 		}
@@ -52,6 +60,7 @@ class Spell{
 	pre_show(player){
 		this.al_show = (this.al_show == false ? true : false);
 		player.classe.act_spell = (player.classe.act_spell == undefined ? this : undefined);
+		console.log(player.classe.act_spell);
 		let range = player.get_range(this.po);
 		let see_range = [];
 		for (let i =0; i < range.length; i++)

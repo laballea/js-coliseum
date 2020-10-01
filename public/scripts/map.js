@@ -10,6 +10,19 @@ class Map{
 		for (let i = 0; i < this.largeur; i++)
 			this.img_bloc[i] = new Array(this.hauteur);
 	}
+	actualize_map(state){
+		this.data_map = state.map.data_map;
+		this.t_map = state.map.t_map;
+		this.state = state;
+		for (let y = 0; y < this.largeur; y++)
+        {
+			for (let x = 0; x < this.hauteur; x++)
+            {
+				let bloc = this.t_map[x][y];
+				this.img_bloc[x][y].data = bloc;
+			}
+		}
+	}
     draw_bloc (game, posx, posy, largeur, hauteur, x, y) {
 		let bloc = this.t_map[x][y];
         let xx = 22.5;
@@ -72,7 +85,7 @@ class Map{
 			if (this.img_bloc[range[i].posx][range[i].posy].img != undefined)
 					this.img_bloc[range[i].posx][range[i].posy].img.tint = (isNaN(tint * 95096) ? undefined : tint * 95096);
 		}
-		for (let i =0; i < see_range.length; i++){
+		for (let i = 0; i < see_range.length; i++){
 			if (this.img_bloc[see_range[i].posx][see_range[i].posy].img != undefined)
 				this.img_bloc[see_range[i].posx][see_range[i].posy].img.tint = tint;
 		}
@@ -85,6 +98,7 @@ class Bloc{
 	constructor (data, img, posx, posy) {
 		this.data = data;
 		this.img = img;
+		this.isPers = undefined;
 		if (data.type != 0)
 			this.img.data = this;
 		this.game_pos = [posx, posy];

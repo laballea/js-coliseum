@@ -40,8 +40,17 @@ function newJoin (socket, game, id)
 	});
 	socket.on('spell_press', (spell_id) =>{
 		socket.emit('preshow_range', game.players[id].classe.spells[spell_id].pre_show(game.players[id]),
-			game.players[id].classe.spells[spell_id].al_show);
+			game.players[id].classe.spells[spell_id].al_show, game.players[id]);
 	});
+	socket.on('attack', (obj) =>{
+		let enemy;
+		if (obj.isPers == undefined)
+			enemy = undefined;
+		else
+			enemy = game.players[obj.isPers];
+		game.players[id].classe.act_spell.do(game.players[id], enemy);
+		socket.emit('attacked', game.players[id].classe.act_spell, enemy, game);
+	})
 	socket.on('move', (path) =>{
 		if (game.current_player == game.players[id])
 		{

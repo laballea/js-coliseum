@@ -159,7 +159,6 @@ class Player {
 		this.pos = pos;
 		this.id = id;
         this.bloc = map.t_map[pos[0]][pos[1]];
-        this.bloc.empty = false;
         this.bloc.isPers = this.id;
 		this.save = [500, 5, 6];
 		this.pv = this.save[0];

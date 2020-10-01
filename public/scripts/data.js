@@ -162,7 +162,6 @@ class Enemy{
     }
     act_data(data){
 		this.data = data;
-		console.log(this.data);
         this.posx = this.data.pos[0];
         this.posy = this.data.pos[1];
         this.bloc = this.map.t_map[this.posx][this.posy];
