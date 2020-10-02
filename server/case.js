@@ -50,7 +50,8 @@ class bloc{
     fScore = Infinity;
     cameFrom;
 	constructor(posx, posy, type){
-        this.isPers = undefined;
+		this.isPers = undefined;
+		this.pos = [posx, posy];
 		this.posx = posx;
         this.posy = posy;
         this.rposx = posy;

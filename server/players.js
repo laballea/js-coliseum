@@ -167,28 +167,6 @@ class Player {
         this.pf = new pf(map, id);
         this.map = map;
 	}
-	in_range(po, obj) {
-        let min = po[0];
-		let max = po[1];
-		let nXDifferenceTiles = Math.abs(this.pos[0] - obj.posx);
-		let nYDifferenceTiles = Math.abs(this.pos[1] - obj.posy);
-        let dst = nXDifferenceTiles + nYDifferenceTiles;
-		if (dst <= max && dst > min)
-			return (obj);
-        else
-            return (undefined);
-    }
-	get_range (po) {
-		let path = [];
-		for (let x = 0; x < this.map.largeur; x++) {
-			for (let y = 0; y < this.map.hauteur; y++) {
-                let obj = this.in_range(po, this.map.t_map[x][y]);
-				if (obj != undefined)
-					path.push(obj);
-			}
-		}
-		return (path);
-    }
 	move (x, y) {
         this.bloc.isPers = undefined;
         this.pos = [x, y];
@@ -197,7 +175,6 @@ class Player {
         this.pm -= 1;
 	}
 	reset (){
-		this.pv = this.save[0];
 		this.pm = this.save[1];
 		this.pa = this.save[2];
 	}

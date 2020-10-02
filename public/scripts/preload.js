@@ -12,6 +12,8 @@ function load_map(game) {
 }
 function load_class(game) {
     game.load.image('Iop', 'asset/Iop.png');
-    game.load.image('Iop_spell_1', 'asset/Iop_spell_1.png');
+	game.load.image('Iop_spell_0', 'asset/Iop_spell_0.png');
+	game.load.image('Iop_spell_1', 'asset/Iop_spell_1.png');
+	game.load.image('Iop_spell_2', 'asset/Iop_spell_2.png');
 }
 /*END*/

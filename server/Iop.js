@@ -8,19 +8,24 @@ class Iop{
 		this.spell_show = false;
 	}
 	init_spell(){
-		this.spells.push(new Spell("CaC", 0, "Iop_spell_1", 0, 10, 20, 3, 0));
+		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 50, 4, 0));
+		this.spells.push(new Spell("qwe", 1, "Iop_spell_1", 0, 10, 20, 3, 1));
+		this.spells.push(new Spell("aze", 2, "Iop_spell_2", 0, 10, 20, 3, 2));
 	}
 }
 
 class Spell{
-	constructor(name, id, file,min_po, po, dmg, pa) {
+	constructor(name, id, file, min_po, po, dmg, pa, type) {
 		this.name = name;
+		this.type = type; //type 0 = cerlce; type 1 = ligne; type 2 = diag
+		this.zone = []
 		this.id = id;
 		this.file = file;
 		this.pa = pa;
 		this.po = [min_po, po];
 		this.dmg = dmg;
 		this.al_show  = false;
+		this.range = new Range();
 	}
 	do(player, enemy){
 
@@ -40,7 +45,13 @@ class Spell{
             i++;
         }
         return (0);
-    }
+	}
+	spell_zone(obj, map, player){
+		let path = undefined;
+		if (this.range.in_range(this.po, obj, player))
+			path = this.range.cercle([0, 1], map, obj);
+		return (path);
+	}
 	does_see(pos, obj, player){
 		let pos_obj = [obj.posx, obj.posy];
 		let vect = [pos_obj[0] - pos[0], pos_obj[1] - pos[1]];
@@ -57,11 +68,16 @@ class Spell{
 		}
 		return (true);
 	}
-	pre_show(player){
+	pre_show(player, map){
 		this.al_show = (this.al_show == false ? true : false);
 		player.classe.act_spell = (player.classe.act_spell == undefined ? this : undefined);
-		console.log(player.classe.act_spell);
-		let range = player.get_range(this.po);
+		let range;
+		if (this.type == 0)
+			range = this.range.cercle(this.po, map, player);
+		else if (this.type == 1)
+			range = this.range.ligne(this.po, map, player);
+		else if (this.type == 2)
+			range = this.range.diag(this.po, map, player);
 		let see_range = [];
 		for (let i =0; i < range.length; i++)
 		{
@@ -72,19 +88,64 @@ class Spell{
 		}
 		return ([range, see_range]);
 	}
-	/*action(obj, add) {
-		if (this.perso.pa - this.pa >= 0)
-		{
-			if (obj.isPers)
-			{
-				let enemy = obj.isPers;
-				enemy.pv -= this.dmg;
-				aff.display_dmg(this.dmg, enemy, add);
-			}
-			this.perso.pa -= this.pa;
-			hud.refresh_hud();
+
+}
+
+class Range{
+		/* CERCLE */
+		in_range(po, obj, player) {
+			let min = po[0];
+			let max = po[1];
+			let nXDifferenceTiles = Math.abs(player.pos[0] - obj.posx);
+			let nYDifferenceTiles = Math.abs(player.pos[1] - obj.posy);
+			let dst = nXDifferenceTiles + nYDifferenceTiles;
+			if (dst <= max && dst > min)
+				return (obj);
+			else
+				return (undefined);
 		}
-	}*/
+		cercle (po, map, player) {
+			let path = [];
+			for (let x = 0; x < map.largeur; x++) {
+				for (let y = 0; y < map.hauteur; y++) {
+					let obj = this.in_range(po, map.t_map[x][y], player);
+					if (obj != undefined)
+						path.push(obj);
+				}
+			}
+			return (path);
+		}
+		/* END */
+		/* LIGNE */
+		check_push(map, x, y, lst){
+			if (map.t_map[x] && map.t_map[x][y])
+				lst.push(map.t_map[x][y]);
+			return ;
+		}
+		ligne(po, map, player){
+			let lst = [];
+			let pos = player.pos;
+			for (let x = po[0] + 1; x < po[1]; x++){
+				this.check_push(map, pos[0] + x, pos[1], lst);
+				this.check_push(map, pos[0] - x, pos[1], lst);
+				this.check_push(map, pos[0], pos[1] + x, lst);
+				this.check_push(map, pos[0], pos[1] - x, lst);
+			}
+			return (lst);
+		}
+		/* END */
+		/* DIAG */
+		diag(po, map, player){
+			let lst = [];
+			let pos = player.pos;
+			for (let x = po[0] + 1; x < po[1]; x++){
+				this.check_push(map, pos[0] + x, pos[1] + x, lst);
+				this.check_push(map, pos[0] - x, pos[1] + x, lst);
+				this.check_push(map, pos[0] + x, pos[1] - x, lst);
+				this.check_push(map, pos[0] - x, pos[1] - x, lst);
+			}
+			return (lst);
+		}
 }
 
 module.exports = {

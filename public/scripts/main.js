@@ -55,8 +55,13 @@ class Main extends Phaser.Scene {
 			else
 				this.map.draw_range(range, see_range, undefined);
 		});
-		this.socket.on('attacked', (spell, en_id, game) =>{
-			console.log(en_id);
+		this.socket.on('attacked', (game) =>{
+			this.player.perso = game.players[this.player.id];
+			this.hud.re_draw(game, this);
+		})
+		this.socket.on('previsu_zone', (zone) =>{
+			if (zone != undefined)
+				this.map.draw_range(zone, zone, 0x770000);
 		})
     }
 	click_function(){
@@ -74,7 +79,9 @@ class Main extends Phaser.Scene {
 			if (gameObject.type == 1)
             {
 				let bloc = gameObject.data;
-				if (this.path.length == 0)
+				if (this.player.perso.classe.act_spell != undefined)
+					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data);
+				else if (this.path.length == 0)
 					this.socket.emit("previsu", bloc.data);
 				if (gameObject.tintBottomLeft == 0x770000)
 				{
@@ -88,8 +95,11 @@ class Main extends Phaser.Scene {
         this.input.on('gameobjectout', (pointer,gameObject) =>{
 			if (gameObject.type == 1)
 			{
-				if (tmp != undefined)
-					gameObject.tint = 0x000077;
+				/*if (this.zone.length >0)
+				{
+					for (let i = 0; i < this.zone.length; i++)
+						zone[i].img.tint = undefined;
+				}*/	
 				if (this.path.length != 0)
 				{
 					for (let i = 0; i < this.path.length; i++)

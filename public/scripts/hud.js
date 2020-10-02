@@ -3,6 +3,7 @@
 class HUD{
     constructor(state, id) {
 		this.state = state;
+		this.spells = [];
 		this.id = id;
     }
     draw_hud(game) {
@@ -30,15 +31,12 @@ class HUD{
         this.pass_tour = game.add.image(this.state.windowX * 0.065, this.state.windowY * 0.90, 'pass_t').setInteractive().on('pointerdown', () => {
 			game.socket.emit("passe_tour", this.id);
 		});
-		this.spell1 = game.add.image(this.state.windowX * 0.12, this.state.windowY * 0.8, player.classe.spells[0].file).setInteractive().on('pointerdown', () => {
-			game.socket.emit("spell_press", player.classe.spells[0].id);
-		});
-        /*this.game.imageGroup.add(this.pass_tour)
-        this.game.imageGroup.add(this.h_pa);
-        this.game.imageGroup.add(this.h_pm);
-        this.game.imageGroup.add(this.h_pv);
-        this.game.imageGroup.add(this.h_name);
-        this.game.imageGroup.add(this.spell1);*/
+		for (let i = 0; i < player.classe.spells.length; i++)
+		{
+			this.spells[i] = game.add.image(this.state.windowX * 0.12 + i * 55, this.state.windowY * 0.8, player.classe.spells[i].file).setInteractive().on('pointerdown', () => {
+				game.socket.emit("spell_press", player.classe.spells[i].id);
+			});
+		}
     }
     re_draw(state, game) {
 		this.state = state;

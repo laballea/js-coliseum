@@ -39,9 +39,12 @@ function newJoin (socket, game, id)
 			socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));
 	});
 	socket.on('spell_press', (spell_id) =>{
-		socket.emit('preshow_range', game.players[id].classe.spells[spell_id].pre_show(game.players[id]),
+		socket.emit('preshow_range', game.players[id].classe.spells[spell_id].pre_show(game.players[id], game.map),
 			game.players[id].classe.spells[spell_id].al_show, game.players[id]);
 	});
+	socket.on('over_spell', (spell_id, obj)=> {
+		socket.emit('previsu_zone', game.players[id].classe.spells[spell_id].spell_zone(obj, game.map, game.players[id]));
+	})
 	socket.on('attack', (obj) =>{
 		let enemy;
 		if (obj.isPers == undefined)
@@ -49,7 +52,7 @@ function newJoin (socket, game, id)
 		else
 			enemy = game.players[obj.isPers];
 		game.players[id].classe.act_spell.do(game.players[id], enemy);
-		socket.emit('attacked', game.players[id].classe.act_spell, enemy, game);
+		io.emit('attacked', game);
 	})
 	socket.on('move', (path) =>{
 		if (game.current_player == game.players[id])
