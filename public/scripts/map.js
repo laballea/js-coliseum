@@ -80,14 +80,38 @@ class Map{
             }
 		}
 	}
+	reset_tint(){
+        for (let x = 0; x < this.largeur; x++)
+        {
+            for (let y = 0; y < this.hauteur; y++)
+            {
+				let bloc = this.img_bloc[x][y];
+				if (bloc.img != undefined)
+				{
+					bloc.img.tint = undefined;
+					bloc.tint = undefined;
+				}	
+            }
+		}
+	}
 	draw_range(range, see_range, tint){
 		for (let i = 0; i < range.length; i++){
 			if (this.img_bloc[range[i].posx][range[i].posy].img != undefined)
-					this.img_bloc[range[i].posx][range[i].posy].img.tint = (isNaN(tint * 95096) ? undefined : tint * 95096);
+			{
+				let bloc = this.img_bloc[range[i].posx][range[i].posy];
+				let tmp_tint = (isNaN(tint * 95096) ? undefined : tint * 95096)
+				bloc.img.tint = tmp_tint;
+				bloc.tint = tmp_tint;
+
+			}
 		}
 		for (let i = 0; i < see_range.length; i++){
 			if (this.img_bloc[see_range[i].posx][see_range[i].posy].img != undefined)
-				this.img_bloc[see_range[i].posx][see_range[i].posy].img.tint = tint;
+			{
+				let bloc = this.img_bloc[see_range[i].posx][see_range[i].posy]
+				bloc.img.tint = tint;
+				bloc.tint = tint;
+			}
 		}
 	}
 }
@@ -96,6 +120,7 @@ class Map{
 /* Class d'un Bloc */
 class Bloc{
 	constructor (data, img, posx, posy) {
+		this.tint = undefined;
 		this.data = data;
 		this.img = img;
 		this.isPers = undefined;

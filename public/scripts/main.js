@@ -4,6 +4,7 @@ class Main extends Phaser.Scene {
     map;
     player;
 	path = [];
+	zone = [];
 	hud;
     preload () {
         this.imageGroup = this.add.group();
@@ -45,23 +46,35 @@ class Main extends Phaser.Scene {
 			this.hud.re_draw(state, this);
 		})
 		this.socket.on('preshow_range', (data, al_show, player) =>{
+			this.player.perso = player;
+			if (data == undefined)
+			{
+				this.map.reset_tint();
+				return ;
+			}
 			let range = data[0];
 			let see_range = data[1];
-			this.player.perso = player;
 			if (see_range == undefined || range == undefined)
 				return ;
-			if (al_show == true)
-				this.map.draw_range(range, see_range, 0x000077);
-			else
-				this.map.draw_range(range, see_range, undefined);
+			this.map.reset_tint();
+			this.map.draw_range(range, see_range, 0x000077);
 		});
 		this.socket.on('attacked', (game) =>{
 			this.player.perso = game.players[this.player.id];
 			this.hud.re_draw(game, this);
 		})
 		this.socket.on('previsu_zone', (zone) =>{
-			if (zone != undefined)
-				this.map.draw_range(zone, zone, 0x770000);
+            if (zone == undefined)
+				return ;
+			for (let i = 0; i < zone.length; i++)
+			{
+				let bloc =  this.map.img_bloc[zone[i].posx][zone[i].posy];
+				if (bloc.img)
+               	{
+				   bloc.img.tint = 0x770000;
+				   this.zone.push(this.map.img_bloc[zone[i].posx][zone[i].posy]);
+			   	}
+            }
 		})
     }
 	click_function(){
@@ -79,27 +92,22 @@ class Main extends Phaser.Scene {
 			if (gameObject.type == 1)
             {
 				let bloc = gameObject.data;
+				console.log(this.player.perso.classe.act_spell)
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data);
 				else if (this.path.length == 0)
 					this.socket.emit("previsu", bloc.data);
-				if (gameObject.tintBottomLeft == 0x770000)
-				{
-					gameObject.tint = 0x770000;
-					tmp = gameObject;
-				}
-				else
-					tmp = undefined;
 			}
         });
         this.input.on('gameobjectout', (pointer,gameObject) =>{
 			if (gameObject.type == 1)
 			{
-				/*if (this.zone.length >0)
+				if (this.zone.length != 0)
 				{
 					for (let i = 0; i < this.zone.length; i++)
-						zone[i].img.tint = undefined;
-				}*/	
+						this.zone[i].img.tint = this.zone[i].tint;
+					this.zone = [];
+				}	
 				if (this.path.length != 0)
 				{
 					for (let i = 0; i < this.path.length; i++)

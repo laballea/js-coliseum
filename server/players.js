@@ -5,14 +5,14 @@ class pf{
         this.map = map;
         this.id = id;
     }
-    get_near(y, x) {
+    get_near(x, y) {
         if (y < 0 || y >= this.map.largeur)
             return (undefined);
         if (x < 0 || x >= this.map.hauteur)
             return (undefined);
-        let obj = this.map.t_map[y][x];
+        let obj = this.map.t_map[x][y];
         if (obj.empty == true && (obj.isPers == undefined))
-            return (this.map.t_map[y][x]);
+            return (this.map.t_map[x][y]);
         else
             return (undefined);
     }
@@ -29,10 +29,10 @@ class pf{
       }
     get_neighbor(obj) {
         let neighbor = new Array(4);
-        neighbor[0] = this.get_near(obj.rposy, obj.rposx - 1);
-        neighbor[1] = this.get_near(obj.rposy + 1, obj.rposx);
-        neighbor[2] = this.get_near(obj.rposy - 1, obj.rposx);
-        neighbor[3] = this.get_near(obj.rposy, obj.rposx + 1);
+        neighbor[0] = this.get_near(obj.posx, obj.posy - 1);
+        neighbor[1] = this.get_near(obj.posx + 1, obj.posy);
+        neighbor[2] = this.get_near(obj.posx - 1, obj.posy);
+        neighbor[3] = this.get_near(obj.posx, obj.posy + 1);
         return (this.shuffle(neighbor));
     }
     get_lowest_fscore(openset){
@@ -53,8 +53,8 @@ class pf{
         return (obj);
     }
     h(start, obj) {
-        let nXDifferenceTiles = Math.round(Math.abs(obj.rposx - start.rposx));
-        let nYDifferenceTiles = Math.round(Math.abs(obj.rposy - start.rposy));
+        let nXDifferenceTiles = Math.round(Math.abs(obj.posx - start.posx));
+        let nYDifferenceTiles = Math.round(Math.abs(obj.posy - start.posy));
         let cost = nXDifferenceTiles + nYDifferenceTiles;
         return (cost);
     }

@@ -39,7 +39,7 @@ class Map{
 		}
 		for (let n = 0; n < this.largeur; n++) {
 			for (let i = 0; i < this.hauteur; i++) {
-				this.t_map[n][i] = new bloc(n, i, this.data_map[n][i]);
+                this.t_map[n][i] = new bloc(n, i, this.data_map[n][i], (n * 100) + i);
 			}
 		}
 	}
@@ -49,13 +49,12 @@ class bloc{
     gScore = Infinity;
     fScore = Infinity;
     cameFrom;
-	constructor(posx, posy, type){
+	constructor(posx, posy, type, id){
+        this.id = id;
 		this.isPers = undefined;
 		this.pos = [posx, posy];
 		this.posx = posx;
         this.posy = posy;
-        this.rposx = posy;
-        this.rposy = posx;
         this.type = type;
         this.x;
         this.y;

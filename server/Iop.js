@@ -5,7 +5,6 @@ class Iop{
 		this.spells = [];
 		this.init_spell();
 		this.act_spell = undefined;
-		this.spell_show = false;
 	}
 	init_spell(){
 		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 50, 4, 0));
@@ -24,8 +23,8 @@ class Spell{
 		this.pa = pa;
 		this.po = [min_po, po];
 		this.dmg = dmg;
-		this.al_show  = false;
 		this.range = new Range();
+		this.see_range = undefined;
 	}
 	do(player, enemy){
 
@@ -47,10 +46,17 @@ class Spell{
         return (0);
 	}
 	spell_zone(obj, map, player){
-		let path = undefined;
-		if (this.range.in_range(this.po, obj, player))
-			path = this.range.cercle([0, 1], map, obj);
-		return (path);
+		let path = [];
+		let zone = undefined;
+		for (let i = 0; i < this.see_range.length; i++){
+			if (this.see_range[i].id == obj.id){
+				zone = this.range.cercle([-1, 1], map, obj);
+				for (let i = 0; i < zone.length; i++)
+					path.push(zone[i]);
+				return (path);
+			}
+		}
+		return (undefined);
 	}
 	does_see(pos, obj, player){
 		let pos_obj = [obj.posx, obj.posy];
@@ -61,7 +67,7 @@ class Spell{
 			pos_current = [pos_current[0] + vect[0] / 50, pos_current[1] + vect[1] / 50];
 			let pos_current_obj = [Math.round(pos_current[0]), Math.round(pos_current[1])];
 			let bloc = player.map.t_map[pos_current_obj[0]][pos_current_obj[1]];
-			if (bloc.isPers != undefined && bloc != player.bloc && bloc == obj)
+			if (bloc.isPers != undefined && bloc != player.bloc && bloc.id == obj.id)
 				return (true);
 			if (bloc.type == 2 || (bloc.isPers != undefined && bloc != player.bloc))
 				return (false);
@@ -69,8 +75,9 @@ class Spell{
 		return (true);
 	}
 	pre_show(player, map){
-		this.al_show = (this.al_show == false ? true : false);
-		player.classe.act_spell = (player.classe.act_spell == undefined ? this : undefined);
+		player.classe.act_spell = (player.classe.act_spell != this ? this : undefined);
+		if (player.classe.act_spell == undefined)
+			return (undefined);
 		let range;
 		if (this.type == 0)
 			range = this.range.cercle(this.po, map, player);
@@ -86,6 +93,7 @@ class Spell{
 			else
 				continue;
 		}
+		this.see_range = see_range;
 		return ([range, see_range]);
 	}
 
