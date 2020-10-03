@@ -177,7 +177,15 @@ class Player {
 	reset (){
 		this.pm = this.save[1];
 		this.pa = this.save[2];
-	}
+    }
+    get_enemy(lst){
+        let lst_enemys = [];
+        for (let i = 0; i < lst.length; i++){
+            if (lst[i].isPers != undefined)
+                lst_enemys.push(lst[i].isPers);
+        }
+        return (lst_enemys);
+    }
 }
 
 module.exports = {

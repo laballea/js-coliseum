@@ -81,7 +81,7 @@ class Main extends Phaser.Scene {
 		this.input.on('gameobjectdown', (pointer,gameObject) =>{
 			if (gameObject.type == 1)
             {
-				if (this.player.perso.classe.act_spell != undefined && tmp != undefined)
+				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("attack", gameObject.data.data)
 				else if (this.path.length != 0)
 					this.socket.emit('move', this.path);
@@ -92,7 +92,6 @@ class Main extends Phaser.Scene {
 			if (gameObject.type == 1)
             {
 				let bloc = gameObject.data;
-				console.log(this.player.perso.classe.act_spell)
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data);
 				else if (this.path.length == 0)

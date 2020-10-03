@@ -6,26 +6,32 @@ const { Game } = require('./game')
 const { Map } = require('./case')
 const { Player } = require('./players')
 
-var nb_player = 0;
-var pos = [[0, 0], [5, 5]]
+var pos = [[0, 0], [5, 5], [4, 6]]
 var game = new Game();
 var board = new Map();
 app.use(express.static('public'))
 io.on('connection', (socket) => {
 	console.log('a user connected')
-	/*setInterval(() =>{
+	let inter = setInterval(() =>{
+		if (socket.disconnected)
+		{
+			game.nb_player -= 1;
+			game.players.splice(socket.idd, 1);
+			clearInterval(inter);
+		}
 		console.log(socket.disconnected);
-	}, 1000);*/
-	socket.name= "User" + nb_player;
+	}, 1000);
+	socket.idd = game.nb_player;
+	socket.name= "User" + game.nb_player;
 	load_game(socket)
 });
 
 function load_game(socket) {
 	game.map = board;
-	game.nbPlayer = nb_player;
-	game.players.push(new Player("Iop", "Perso", pos[nb_player], nb_player, board));
+	console.log(game.nb_player)
+	game.players.push(new Player("Iop", "Perso", pos[game.nb_player], game.nb_player, board));
 	game.current = 0;
-	newJoin(socket, game, nb_player++);
+	newJoin(socket, game, game.nb_player++);
 }
 
 function newJoin (socket, game, id)
@@ -46,13 +52,11 @@ function newJoin (socket, game, id)
 		socket.emit('previsu_zone', game.players[id].classe.spells[spell_id].spell_zone(obj, game.map, game.players[id]));
 	})
 	socket.on('attack', (obj) =>{
-		let enemy;
-		if (obj.isPers == undefined)
-			enemy = undefined;
-		else
-			enemy = game.players[obj.isPers];
-		game.players[id].classe.act_spell.do(game.players[id], enemy);
-		io.emit('attacked', game);
+		let enemys;
+		enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(obj, game.map));
+		console.log(enemys);
+		//game.players[id].classe.act_spell.do(game.players[id], enemy);
+		//io.emit('attacked', game);
 	})
 	socket.on('move', (path) =>{
 		if (game.current_player == game.players[id])
@@ -72,7 +76,7 @@ function newJoin (socket, game, id)
 		{
 			game.players[id].reset();
 			let n = id;
-			if (n + 1 == nb_player)
+			if (n + 1 == game.nb_player)
 				n = 0;
 			else
 				n++;

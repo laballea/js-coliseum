@@ -1,6 +1,7 @@
 
 class Perso{
 	constructor(state, id, game){
+		console.log(state.players, id)
 		this.perso = state.players[id];
 		this.enemys = state.players;
 		this.img_enemy = [];

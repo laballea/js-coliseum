@@ -45,7 +45,7 @@ class Spell{
         }
         return (0);
 	}
-	spell_zone(obj, map, player){
+	spell_zone(obj, map){
 		let path = [];
 		let zone = undefined;
 		for (let i = 0; i < this.see_range.length; i++){
