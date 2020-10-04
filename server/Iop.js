@@ -34,7 +34,9 @@ class Spell{
 					game.players[enemy[i]].pv -= this.dmg;
 			}
 			player.pa -= this.pa;
+			return (true);
 		}
+		return (false);
 	}
 	in(lst, obj) {
         let i = 0;

@@ -51,8 +51,8 @@ function newJoin (socket, game, id)
 	socket.on('attack', (obj) =>{
 		let enemys;
 		enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(obj, game.map));
-		game.players[id].classe.act_spell.do(game.players[id], enemys, game);
-		io.emit('attacked', game, game.players[id].classe.act_spell, enemys);
+		if (game.players[id].classe.act_spell.do(game.players[id], enemys, game))
+			io.emit('attacked', game, game.players[id].classe.act_spell, enemys);
 	})
 	socket.on('move', (path) =>{
 		if (game.current_player == game.players[id])

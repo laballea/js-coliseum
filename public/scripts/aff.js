@@ -8,14 +8,15 @@ class Aff{
 		let dmg_txt = [];
 		let x = 0;
 		let inter = setInterval(() =>{
-			//this.destroy_img(dmg_txt);
+			this.destroy_img(dmg_txt);
 			this.construct_img(dmg_txt, enemy, damage, state, game, x);
-			console.log("ok")
 			x++;
-			if (x == 150)
+			if (x == 80)
+			{
 				clearInterval(inter);
-		}, 1000);
-
+				this.destroy_img(dmg_txt);
+			}
+		}, 100);
 	}
 	destroy_img(lst) {
 		for (let i = 0; i < lst.length; i++){
@@ -27,8 +28,7 @@ class Aff{
 		for (let i = 0; i < enemys.length; i++){
 			let enemy = state.players[enemys[i]];
 			let pos = game.map.img_bloc[enemy.pos[0]][enemy.pos[1]].game_pos;
-			console.log(pos);
-			lst.push(game.add.text(pos[0], pos[1] - x, "-" + damage, {
+			lst.push(game.add.text(pos[0], pos[1] - 50 - x, "-" + damage, {
 				font: 20 + "px Arial",
 				fill: "#800000",
 				align: "center"
