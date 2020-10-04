@@ -15,11 +15,9 @@ io.on('connection', (socket) => {
 	let inter = setInterval(() =>{
 		if (socket.disconnected)
 		{
-			game.nb_player -= 1;
-			game.players.splice(socket.idd, 1);
+			socket.removeAllListeners();
 			clearInterval(inter);
 		}
-		console.log(socket.disconnected);
 	}, 1000);
 	socket.idd = game.nb_player;
 	socket.name= "User" + game.nb_player;
@@ -28,7 +26,6 @@ io.on('connection', (socket) => {
 
 function load_game(socket) {
 	game.map = board;
-	console.log(game.nb_player)
 	game.players.push(new Player("Iop", "Perso", pos[game.nb_player], game.nb_player, board));
 	game.current = 0;
 	newJoin(socket, game, game.nb_player++);
@@ -54,9 +51,8 @@ function newJoin (socket, game, id)
 	socket.on('attack', (obj) =>{
 		let enemys;
 		enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(obj, game.map));
-		console.log(enemys);
-		//game.players[id].classe.act_spell.do(game.players[id], enemy);
-		//io.emit('attacked', game);
+		game.players[id].classe.act_spell.do(game.players[id], enemys, game);
+		io.emit('attacked', game);
 	})
 	socket.on('move', (path) =>{
 		if (game.current_player == game.players[id])

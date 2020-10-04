@@ -26,12 +26,13 @@ class Spell{
 		this.range = new Range();
 		this.see_range = undefined;
 	}
-	do(player, enemy){
-
+	do(player, enemy, game){
 		if (player.pa - this.pa >= 0)
 		{
-			if (enemy != undefined)
-				enemy.pv -= this.dmg;
+			for (let i = 0; i < enemy.length; i++) {
+				if (game.players[enemy[i]] != undefined)
+					game.players[enemy[i]].pv -= this.dmg;
+			}
 			player.pa -= this.pa;
 		}
 	}
