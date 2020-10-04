@@ -2,7 +2,8 @@
 class Main extends Phaser.Scene {
     socket
     map;
-    player;
+	player;
+	aff;
 	path = [];
 	zone = [];
 	hud;
@@ -59,9 +60,10 @@ class Main extends Phaser.Scene {
 			this.map.reset_tint();
 			this.map.draw_range(range, see_range, 0x000077);
 		});
-		this.socket.on('attacked', (game) =>{
+		this.socket.on('attacked', (game, spell, enemys) =>{
 			this.player.perso = game.players[this.player.id];
 			this.hud.re_draw(game, this);
+			this.aff.display_dmg(spell, enemys, game, this);
 		})
 		this.socket.on('previsu_zone', (zone) =>{
             if (zone == undefined)
@@ -117,6 +119,7 @@ class Main extends Phaser.Scene {
 			});
 	}
     build(state, id) {
+		this.aff = new Aff(state);
 		this.map = new Map(state);
 		this.map.draw_map(this);
 		this.player = new Perso(state, id, this);
