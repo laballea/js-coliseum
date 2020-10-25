@@ -7,6 +7,7 @@ class Main extends Phaser.Scene {
 	path = [];
 	zone = [];
 	hud;
+	menu;
     preload () {
         this.imageGroup = this.add.group();
         load_hud(this);
@@ -14,9 +15,12 @@ class Main extends Phaser.Scene {
         load_class(this);
     }
     create () {
-        this.socket = io();
+		this.socket = io();
+		this.socket.on('menu', (state, id, current) =>{
+            this.menu(state, id);
+        });
         this.socket.on('stateChanged', (state, id, current) =>{
-            this.build(state, id, current);
+            this.build(state, id);
         });
         this.socket.on('end_previsu', (path) =>{
             if (path == undefined)
@@ -117,6 +121,10 @@ class Main extends Phaser.Scene {
 					}
 				}
 			});
+	}
+	menu(state, id) {
+		this.menu = new Menu(state);
+		console.log("OKKKK\n");
 	}
     build(state, id) {
 		this.aff = new Aff(state);

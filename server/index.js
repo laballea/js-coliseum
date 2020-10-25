@@ -28,10 +28,16 @@ function load_game(socket) {
 	game.map = board;
 	game.players.push(new Player("Iop", "Perso", pos[game.nb_player], game.nb_player, board));
 	game.current = 0;
-	newJoin(socket, game, game.nb_player++);
+	menu(socket, game, game.nb_player++)
+	//ft_game(socket, game, game.nb_player++);
 }
 
-function newJoin (socket, game, id)
+function menu(socket, game, id)
+{
+	socket.emit('menu', game, id);
+}
+
+function ft_game(socket, game, id)
 {
 	game.current_player = game.players[0];
 	socket.emit('stateChanged', game, id, 0);
