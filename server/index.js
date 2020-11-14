@@ -24,11 +24,11 @@ io.on('connection', (socket) => {
 });
 
 function load_game(socket) {
-	var user = new User(new Log(rdm_key('INT'), "Player " + nb_player++), socket);
+	var user = new User(new Log(rdm_key('INT', 4), "Player " + nb_player++), socket);
 	user.menu();
 }
 
-function rdm_key(type) {
+function rdm_key(type, length) {
 	let key = "";
 	let a;
 	let b;
@@ -40,7 +40,7 @@ function rdm_key(type) {
 		a = 65;
 		b = 25;
 	}
-	for (let i = 0; i < 6; i++)
+	for (let i = 0; i < length; i++)
 		key += String.fromCharCode(a + Math.floor((Math.random() * b) + 1));
 	return (key);
 }
@@ -65,7 +65,7 @@ class User {
 		let id = this.log.id;
 		this.socket.emit('menu', this._menu, id);
 		this.socket.on('rdy_to_host', () => {
-			this.log.key = rdm_key('CHAR');
+			this.log.key = rdm_key('CHAR', 6);
 			games.set(this.log.key, [undefined, this._menu]);
 			this._menu.solo = false;
 			this._menu.host_key = this.log.key;
@@ -98,7 +98,7 @@ class User {
 			this.game.nb_player = this._menu.nb_player;
 			games.get(this.log.key)[0] = this.game;
 			for (let i = 0; i < this._menu.nb_player; i++) {
-				if (this._menu.type == "tvt")
+				//if (this._menu.type == "tvt")
 				this.game.players.push(new Player("Iop", this._menu.players[i], (this._menu.type == "tvt" ? this.game.tvt_pos[i] : this.game.ffa_pos[i]), this.game.map, i));
 			}
 			io.to(this._menu.host_key).emit('rdy_to_launch');	
