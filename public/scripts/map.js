@@ -6,6 +6,7 @@ class Map{
         this.data_map = state.map.data_map;
         this.t_map = state.map.t_map;
 		this.state = state;
+		this.img_grp = new Array();
 		this.img_bloc = new Array(this.largeur);
 		for (let i = 0; i < this.largeur; i++)
 			this.img_bloc[i] = new Array(this.hauteur);
@@ -40,25 +41,24 @@ class Map{
 			file = "iso_2_pair";
 		else
 			file = "iso_2";
+		let img;
         switch (bloc.type){
 			case 2:
-				game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur);
-				this.img = game.add.image(posx, posy - 10, file).setDisplaySize(largeur, hauteur);
-				this.img.type = 1;
+				this.img_grp.push(game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur));
+				this.img_grp.push(img = game.add.image(posx, posy - 10, file).setDisplaySize(largeur, hauteur));
+				img.type = 1;
 				break ;
 			case 1:
-                this.img = game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur);
-                this.img.setInteractive(polygon, Phaser.Geom.Polygon.Contains);
-				this.img.setInteractive();
-				this.img.type = 1;
+				this.img_grp.push(img = game.add.image(posx, posy, file).setDisplaySize(largeur, hauteur));
+                img.setInteractive(polygon, Phaser.Geom.Polygon.Contains);
+				img.setInteractive();
+				img.type = 1;
 				break ;
 			case 0:
-				this.img = undefined;
+				img = undefined;
 				break ;
 		}
-		if (this.img != undefined)
-			game.imageGroup.add(this.img);
-		this.img_bloc[bloc.posx][bloc.posy] = new Bloc(bloc, this.img, posx, posy);
+		this.img_bloc[bloc.posx][bloc.posy] = new Bloc(bloc, img, posx, posy);
     }
     draw_map(game)
     {
@@ -114,6 +114,12 @@ class Map{
 			}
 		}
 	}
+	destroy_all() {
+		for (let i = 0; i < this.img_grp.length; i++){
+			if (this.img_grp[i])
+				this.img_grp[i].destroy();
+		}
+	}
 }
 /*END*/
 
@@ -127,6 +133,8 @@ class Bloc{
 		if (data.type != 0)
 			this.img.data = this;
 		this.game_pos = [posx, posy];
+	}
+	destroy () {
 	}
 }
 /*END*/

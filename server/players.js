@@ -11,7 +11,7 @@ class pf{
         if (x < 0 || x >= this.map.hauteur)
             return (undefined);
         let obj = this.map.t_map[x][y];
-        if (obj.empty == true && (obj.isPers == undefined))
+        if (obj.empty == true && (obj.isPers == undefined) && obj.type != 2)
             return (this.map.t_map[x][y]);
         else
             return (undefined);
@@ -99,6 +99,9 @@ class pf{
         else
             return (undefined)
     }
+    echo_lol(){
+        console.log("olo");
+    }
     pathfinding(obj, player) {
         let start = player.bloc;
         start.gScore = 0;
@@ -144,34 +147,32 @@ class pf{
 }
 
 class Player {
-	classe;
-	pseudo;
-	id;
-	pos;
-	rank;
-
-	constructor(classe, pseudo, pos, id, map) {
+	constructor(classe, log, pos, map, game_id) {
 		switch (classe){
 			case 'Iop':
 				this.classe = new Iop();
-		}
-		this.pseudo = pseudo;
+        }
+        this.team;
+        this.dead = false;
+		this.pseudo = log.pseudo;
 		this.pos = pos;
-		this.id = id;
+        this.id = log.id;
+        this.game_id = game_id;
         this.bloc = map.t_map[pos[0]][pos[1]];
-        this.bloc.isPers = this.id;
+        this.bloc.isPers = this.game_id;
 		this.save = [500, 5, 6];
 		this.pv = this.save[0];
 		this.pm = this.save[1];
 		this.pa = this.save[2];
-        this.pf = new pf(map, id);
+        this.pf = new pf(map, this.id);
         this.map = map;
+        this.on_move = false;
 	}
 	move (x, y) {
         this.bloc.isPers = undefined;
         this.pos = [x, y];
         this.bloc = this.map.t_map[x][y];
-        this.bloc.isPers = this.id;
+        this.bloc.isPers = this.game_id;
         this.pm -= 1;
 	}
 	reset (){
@@ -189,5 +190,5 @@ class Player {
 }
 
 module.exports = {
-	Player
+	Player, pf,
 }

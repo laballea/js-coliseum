@@ -1,28 +1,57 @@
 
 class Main extends Phaser.Scene {
-    socket
+    socket;
     map;
 	player;
 	aff;
 	path = [];
 	zone = [];
 	hud;
-	menu;
+	_menu;
     preload () {
-        this.imageGroup = this.add.group();
-        load_hud(this);
-        load_map(this);
-        load_class(this);
-    }
+		this.scale.pageAlignHorizontally = true;
+		this.scale.pageAlignVertically = true;
+		preload_img(this);
+	}
+	socket_menu_handler() {
+		this.socket.on('edit_pseudo', (data, id) =>{
+			if (id == this._menu.state.player.id)
+				this._menu.state.player = data.player;
+			this._menu.state.players = data.players;
+			this.socket.emit('data_change', this._menu.state);
+			this._menu.actualize();
+		});
+		this.socket.on('destroy_menu', () =>{
+			this._menu.delete_menu();
+        });
+		this.socket.on('new_menu', (data) =>{
+			this._menu.actualize(data);
+		});
+		this.socket.on('change_type', (type, state) => {
+			this._menu.change_game_type(type, state);
+		})
+		this.socket.on('menu', (menu, id) =>{
+			this.input.off('gameobjectdown');
+			this.input.off('gameobjectover');
+			this.input.off('gameobjectout');
+            this.menu(menu, id);
+		});
+		this.socket.on('rdy_to_launch', () =>{
+			this.socket.emit('rdy_to_launch');
+		});
+	}
     create () {
 		this.socket = io();
-		this.socket.on('menu', (state, id, current) =>{
-            this.menu(state, id);
-        });
-        this.socket.on('stateChanged', (state, id, current) =>{
+		this.socket_menu_handler();
+        this.socket.on('stateChanged', (state, id) =>{
             this.build(state, id);
+		});
+		this.socket.on('died', (state, lst) =>{
+			this.player.update(state, this);
+			if (lst.find(ele => ele === this.player.id) != undefined)
+				this.map.reset_tint();
         });
-        this.socket.on('end_previsu', (path) =>{
+        this.socket.on('end_previsu', (path) =>{;
             if (path == undefined)
                 return ;
             for (let i = 0; i < path.length; i++)
@@ -43,13 +72,9 @@ class Main extends Phaser.Scene {
 			this.map.actualize_map(state);
 			
 		});
-		this.socket.on('new_log', (state) =>{
-			this.player.re_draw_enemy(state, this);
-			this.map.actualize_map(state);
-		});
 		this.socket.on('end_tour', (state, id)=>{
 			this.hud.re_draw(state, this);
-		})
+		});
 		this.socket.on('preshow_range', (data, al_show, player) =>{
 			this.player.perso = player;
 			if (data == undefined)
@@ -68,7 +93,7 @@ class Main extends Phaser.Scene {
 			this.player.perso = game.players[this.player.id];
 			this.hud.re_draw(game, this);
 			this.aff.display_dmg(spell, enemys, game, this);
-		})
+		});
 		this.socket.on('previsu_zone', (zone) =>{
             if (zone == undefined)
 				return ;
@@ -81,7 +106,13 @@ class Main extends Phaser.Scene {
 				   this.zone.push(this.map.img_bloc[zone[i].posx][zone[i].posy]);
 			   	}
             }
-		})
+		});
+		this.socket.on('end_game', () =>{
+			this.hud.destroy_all();
+			this.player.destroy_all();
+			this.map.destroy_all();
+			this.socket.emit('game_end', this._menu.state);
+		});
     }
 	click_function(){
 		this.input.on('gameobjectdown', (pointer,gameObject) =>{
@@ -89,8 +120,11 @@ class Main extends Phaser.Scene {
             {
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("attack", gameObject.data.data)
-				else if (this.path.length != 0)
+				else if (this.path.length != 0) {
 					this.socket.emit('move', this.path);
+					this.path = [];
+					this.map.reset_tint();
+				}
 			}
 		});
 		var tmp = undefined;
@@ -123,8 +157,7 @@ class Main extends Phaser.Scene {
 			});
 	}
 	menu(state, id) {
-		this.menu = new Menu(state);
-		console.log("OKKKK\n");
+		this._menu = new Menu(state, this, id);
 	}
     build(state, id) {
 		this.aff = new Aff(state);
@@ -146,9 +179,13 @@ class Main extends Phaser.Scene {
 let config = {
     type: Phaser.AUTO,
     width: 1600,
-    height: 900,
+	height: 900,
+	//autoCenter: true,
     scene: Main,
-    backgroundColor: '#0x000000'
+	backgroundColor: '#0x000000',
+    dom: {
+        createContainer: true
+    },
 };
 
 let game = new Phaser.Game(config);

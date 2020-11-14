@@ -1,8 +1,26 @@
 
+function preload_img(game) {
+	load_class(game);
+	load_map(game);
+	load_hud(game);
+	load_menu(game);
+}
+
 /* Charge les images */
 function load_hud(game) {
 	game.load.image('move', 'asset/hud_move.png');
 	game.load.image('pass_t', 'asset/passer_tour.png');
+
+}
+
+function load_menu(game) {
+	game.load.image('pen_edit', 'asset/menu_png/pen_edit.png');
+	game.load.image('join_game_menu', 'asset/menu_png/join_game_menu.png');
+	game.load.image('start_game_menu', 'asset/menu_png/start_game_menu.png');
+	game.load.image('host_game_menu', 'asset/menu_png/host_game_menu.png');
+	game.load.image('tvt_choice_menu', 'asset/menu_png/tvt_choice.png');
+	game.load.image('ffa_choice_menu', 'asset/menu_png/ffa_choice.png');
+	game.load.image('cross_menu', 'asset/menu_png/cross.png');
 }
 
 function load_map(game) {

@@ -7,7 +7,7 @@ class Iop{
 		this.act_spell = undefined;
 	}
 	init_spell(){
-		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 50, 4, 0));
+		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 1000, 4, 0));
 		this.spells.push(new Spell("qwe", 1, "Iop_spell_1", 0, 10, 20, 3, 1));
 		this.spells.push(new Spell("aze", 2, "Iop_spell_2", 0, 10, 20, 3, 2));
 	}
@@ -30,8 +30,11 @@ class Spell{
 		if (player.pa - this.pa >= 0)
 		{
 			for (let i = 0; i < enemy.length; i++) {
-				if (game.players[enemy[i]] != undefined)
+				if (game.players[enemy[i]] != undefined) {
 					game.players[enemy[i]].pv -= this.dmg;
+					if (game.players[enemy[i]].pv <= 0)
+						game.players[enemy[i]].dead = true;
+				}
 			}
 			player.pa -= this.pa;
 			return (true);
@@ -59,7 +62,7 @@ class Spell{
 				return (path);
 			}
 		}
-		return (undefined);
+		return (path);
 	}
 	does_see(pos, obj, player){
 		let pos_obj = [obj.posx, obj.posy];
