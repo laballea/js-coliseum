@@ -8,8 +8,8 @@ function preload_img(game) {
 
 /* Charge les images */
 function load_hud(game) {
-	game.load.image('move', 'asset/hud_move.png');
 	game.load.image('pass_t', 'asset/passer_tour.png');
+	game.load.image('quitter', 'asset/quitter.png');
 
 }
 
@@ -29,9 +29,25 @@ function load_map(game) {
     game.load.image('iso_2_pair', 'asset/iso_2_pair.png');
 }
 function load_class(game) {
-    game.load.image('Iop', 'asset/Iop.png');
-	game.load.image('Iop_spell_0', 'asset/Iop_spell_0.png');
-	game.load.image('Iop_spell_1', 'asset/Iop_spell_1.png');
-	game.load.image('Iop_spell_2', 'asset/Iop_spell_2.png');
+	load_cra(game);
+	load_iop(game);
+}
+function load_cra(game) {
+	game.load.image('Cra_3q_dos', 'asset/Cra/Cra_3q_dos.png');
+	game.load.image('Cra_3q_face', 'asset/Cra/Cra_3q_face.png');
+	game.load.image('Cra_dos', 'asset/Cra/Cra_dos.png');
+	game.load.image('Cra_face', 'asset/Cra/Cra_face.png');
+	game.load.image('Cra_profil', 'asset/Cra/Cra_profil.png');
+}
+
+function load_iop(game) {
+	game.load.image('Iop_3q_dos', 'asset/Iop/Iop_3q_dos.png');
+	game.load.image('Iop_3q_face', 'asset/Iop/Iop_3q_face.png');
+	game.load.image('Iop_dos', 'asset/Iop/Iop_dos.png');
+	game.load.image('Iop_face', 'asset/Iop/Iop_face.png');
+	game.load.image('Iop_profil', 'asset/Iop/Iop_profil.png');
+	game.load.image('Iop_spell_0', 'asset/Iop/Iop_spell_0.png');
+	game.load.image('Iop_spell_1', 'asset/Iop/Iop_spell_1.png');
+	game.load.image('Iop_spell_2', 'asset/Iop/Iop_spell_2.png');
 }
 /*END*/

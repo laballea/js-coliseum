@@ -40,23 +40,23 @@ class Menu{
 				}));
 				this.pen_edit.rotation += 45; break }
 			case 'SKIN' : {
-				let tmp;
-				this.grp.push(tmp = this.game.add.image(posx, posy, "Iop").setDisplaySize(114, 160));
-				if (this.state.type == "tvt") {
-					if (i % 2 == 0)
-						tmp.tint = 0xFFA08B;
-					else
-						tmp.tint = 0x8BFF94;
-				}
+				this.grp.push(this.game.add.image(posx, posy, player.classe + "_face").setDisplaySize(125, 204));
 				break ;}
 			case 'PSEUDO' : {
+				let fy = 0.5;
 				let col;
 				if (player.id == this.id)
 					col = "#008000";
 				else
 					col = "#000000";
-
-				this.grp.push(this.game.add.text(posx * 0.9, posy * 0.5, player.pseudo, {
+				if (this.state.type == "tvt") {
+					fy = 0.47;
+					this.grp.push(this.game.add.text(posx * 0.9, posy * 0.53, "TEAM #" + player.team, {
+						font: "bold 10px Arial",
+						fill: "#000000",
+						align: "left"
+					}));}
+				this.grp.push(this.game.add.text(posx * 0.9, posy * fy, player.pseudo, {
 					font: "20px Arial",
 					fill: col,
 					align: "left"
@@ -98,6 +98,15 @@ class Menu{
 				else
 					this.grp.push(this.choice_png = this.game.add.image(0.43 * this.state.windowX + 59, 0.7 * this.state.windowY, "cross_menu").setDisplaySize(150, 150));
 			}
+			case 'CHOOSE_CLASSE' : {
+				for (let i = 0; i < this.state.classe.length; i++) {
+					let classe = this.state.classe[i];
+					this.grp.push(this.game.add.rectangle(posx * 0.9 + i * classe.dim[0] * 0.35, posy * 1.40, classe.dim[0] * 0.3, classe.dim[1] * 0.3, 0xC0C0C0).setInteractive().on('pointerdown', () => {	
+						this.game.socket.emit('classe_choice', classe.name);
+					}));
+					this.grp.push(this.game.add.image(posx * 0.9 + i * classe.dim[0] * 0.35, posy * 1.40, classe.file[3]).setDisplaySize(classe.dim[0] * 0.3, classe.dim[1] * 0.3));
+				}
+			}
 		}
 	}
 	multiple() {
@@ -113,8 +122,10 @@ class Menu{
 		for (let i = 0; i < this.state.nb_player; i++) {
 			this.draw("PLAY_CARD", i, this.state.players[i]);
 			this.draw("SKIN", i, this.state.players[i]);
-			if (this.id == this.state.players[i].id)
+			if (this.id == this.state.players[i].id) {
 				this.draw("PEN_EDIT", i, this.state.players[i]);
+				this.draw("CHOOSE_CLASSE", i, this.state.players[i]);
+			}
 			this.draw("PSEUDO", i, this.state.players[i]);
 			if (i == 0)
 				this.draw('ADMIN', i, this.state.players[i]);
@@ -125,6 +136,7 @@ class Menu{
 		this.draw("HOST_GAME", 0, this.state.admin);
 		this.draw("JOIN_GAME", 0, this.state.admin);
 		this.draw("PLAY_CARD", 0, this.state.admin);
+		this.draw("CHOOSE_CLASSE", 0, this.state.admin);
 		this.draw("SKIN", 0, this.state.admin);
 		this.draw("PEN_EDIT", 0, this.state.admin);
 		this.draw("PSEUDO", 0, this.state.admin);
@@ -134,6 +146,7 @@ class Menu{
 			this.grp[i].destroy();
 	}
 	actualize(state){
+		console.log(state);
 		this.delete_menu();
 		if (state)
 			this.state = state;

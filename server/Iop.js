@@ -1,29 +1,52 @@
+//const io = require('socket.io')(server)
+
 class Iop{
 	constructor() {
 		this.name = "Iop";
-		this.file = "Iop";
+		this.rot = [1, 0];
+		this.file = ["Iop_3q_dos", "Iop_3q_face", "Iop_dos", "Iop_face", "Iop_profil"]; // 0 1 2 3 4
+		this.dim = [125, 205];
+		this.fact = 0.45;
 		this.spells = [];
 		this.init_spell();
 		this.act_spell = undefined;
 	}
 	init_spell(){
-		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 1000, 4, 0));
-		this.spells.push(new Spell("qwe", 1, "Iop_spell_1", 0, 10, 20, 3, 1));
-		this.spells.push(new Spell("aze", 2, "Iop_spell_2", 0, 10, 20, 3, 2));
+		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 1000, 4, 0, [0, [-1, 1]]));
+		this.spells.push(new Spell("qwe", 1, "Iop_spell_1", 0, 10, 20, 3, 1, [1, [0, 4], [1, 2]]));
+		this.spells.push(new Spell("aze", 2, "Iop_spell_2", 0, 10, 20, 3, 2, [2, [0, 4], [1, 2]]));
+	}
+}
+
+class Cra{
+	constructor() {
+		this.name = "Cra";
+		this.rot = [1, 0];
+		this.file = ["Cra_3q_dos", "Cra_3q_face", "Cra_dos", "Cra_face", "Cra_profil"]; // 0 1 2 3 4
+		this.dim = [125, 205];
+		this.fact = 0.45;
+		this.spells = [];
+		this.init_spell();
+		this.act_spell = undefined;
+	}
+	init_spell(){
+		this.spells.push(new Spell("CoCo", 0, "Iop_spell_0", 0, 10, 1000, 4, 0, [0, [-1, 1]]));
+		this.spells.push(new Spell("qwe", 1, "Iop_spell_1", 0, 10, 20, 3, 1, [1, [0, 4], [1, 2]]));
+		this.spells.push(new Spell("aze", 2, "Iop_spell_2", 0, 10, 20, 3, 2, [2, [0, 4], [1, 2]]));
 	}
 }
 
 class Spell{
-	constructor(name, id, file, min_po, po, dmg, pa, type) {
+	constructor(name, id, file, min_po, po, dmg, pa, type, zone) {
 		this.name = name;
-		this.type = type; //type 0 = cerlce; type 1 = ligne; type 2 = diag
-		this.zone = []
+		this.zone = zone; // type -1 = 1case; type 0 = cercle; type 1 = ligne; type 2 = diag
+		this.type = type; //type 0 = cercle; type 1 = ligne; type 2 = diag
 		this.id = id;
 		this.file = file;
 		this.pa = pa;
 		this.po = [min_po, po];
 		this.dmg = dmg;
-		this.range = new Range();
+		this.utils = new utils(this.zone);
 		this.see_range = undefined;
 	}
 	do(player, enemy, game){
@@ -56,7 +79,13 @@ class Spell{
 		let zone = undefined;
 		for (let i = 0; i < this.see_range.length; i++){
 			if (this.see_range[i].id == obj.id){
-				zone = this.range.cercle([-1, 1], map, obj);
+				if (this.zone[0] == 0)
+					zone = this.utils.cercle(this.zone[1], map, obj);
+				else if (this.zone[0] == 1)
+					zone = this.utils.ligne(this.zone[1], map, obj, true);
+				else if (this.zone[0] == 2)
+					zone = this.utils.diag(this.zone[1], map, obj, true);
+				//zone = this.utils.cercle([-1, 1], map, obj);
 				for (let i = 0; i < zone.length; i++)
 					path.push(zone[i]);
 				return (path);
@@ -86,11 +115,11 @@ class Spell{
 			return (undefined);
 		let range;
 		if (this.type == 0)
-			range = this.range.cercle(this.po, map, player);
+			range = this.utils.cercle(this.po, map, player);
 		else if (this.type == 1)
-			range = this.range.ligne(this.po, map, player);
+			range = this.utils.ligne(this.po, map, player, false);
 		else if (this.type == 2)
-			range = this.range.diag(this.po, map, player);
+			range = this.utils.diag(this.po, map, player, false);
 		let see_range = [];
 		for (let i =0; i < range.length; i++)
 		{
@@ -105,63 +134,73 @@ class Spell{
 
 }
 
-class Range{
-		/* CERCLE */
-		in_range(po, obj, player) {
-			let min = po[0];
-			let max = po[1];
-			let nXDifferenceTiles = Math.abs(player.pos[0] - obj.posx);
-			let nYDifferenceTiles = Math.abs(player.pos[1] - obj.posy);
-			let dst = nXDifferenceTiles + nYDifferenceTiles;
-			if (dst <= max && dst > min)
-				return (obj);
-			else
-				return (undefined);
+class utils{
+	constructor(zone) {
+		this.zone = zone;
+	}
+	/* CERCLE */
+	in_range(po, obj, player) {
+		let min = po[0];
+		let max = po[1];
+		let nXDifferenceTiles = Math.abs(player.pos[0] - obj.posx);
+		let nYDifferenceTiles = Math.abs(player.pos[1] - obj.posy);
+		let dst = nXDifferenceTiles + nYDifferenceTiles;
+		if (dst <= max && dst > min)
+			return (obj);
+		else
+			return (undefined);
+	}
+	cercle(po, map, player) {
+		let path = [];
+		for (let x = 0; x < map.largeur; x++) {
+			for (let y = 0; y < map.hauteur; y++) {
+				let obj = this.in_range(po, map.t_map[x][y], player);
+				if (obj != undefined)
+					path.push(obj);
+			}
 		}
-		cercle (po, map, player) {
-			let path = [];
-			for (let x = 0; x < map.largeur; x++) {
-				for (let y = 0; y < map.hauteur; y++) {
-					let obj = this.in_range(po, map.t_map[x][y], player);
-					if (obj != undefined)
-						path.push(obj);
+		return (path);
+	}
+	/* END */
+	/* LIGNE */
+	check_push(map, x, y, lst, id, zone){
+		if (map.t_map[x] && map.t_map[x][y]) {
+			if (this.zone[0] == 0 || zone == false)
+				lst.push(map.t_map[x][y]);
+			else {
+				if (this.zone[2].find(ele => ele === id) != undefined || this.zone[2][0] == 5) {
+					lst.push(map.t_map[x][y]);
 				}
 			}
-			return (path);
 		}
-		/* END */
-		/* LIGNE */
-		check_push(map, x, y, lst){
-			if (map.t_map[x] && map.t_map[x][y])
-				lst.push(map.t_map[x][y]);
-			return ;
+		return ;
+	}
+	ligne(po, map, player, zone){
+		let lst = [];
+		let pos = player.pos;
+		for (let x = po[0] + 1; x < po[1]; x++){
+			this.check_push(map, pos[0] + x, pos[1], lst, 1, zone);
+			this.check_push(map, pos[0] - x, pos[1], lst, 2, zone);
+			this.check_push(map, pos[0], pos[1] + x, lst, 3, zone);
+			this.check_push(map, pos[0], pos[1] - x, lst, 4, zone);
 		}
-		ligne(po, map, player){
-			let lst = [];
-			let pos = player.pos;
-			for (let x = po[0] + 1; x < po[1]; x++){
-				this.check_push(map, pos[0] + x, pos[1], lst);
-				this.check_push(map, pos[0] - x, pos[1], lst);
-				this.check_push(map, pos[0], pos[1] + x, lst);
-				this.check_push(map, pos[0], pos[1] - x, lst);
-			}
-			return (lst);
+		return (lst);
+	}
+	/* END */
+	/* DIAG */
+	diag(po, map, player, zone){
+		let lst = [];
+		let pos = player.pos;
+		for (let x = po[0] + 1; x < po[1]; x++){
+			this.check_push(map, pos[0] + x, pos[1] + x, lst, 1, zone);
+			this.check_push(map, pos[0] - x, pos[1] + x, lst, 2, zone);
+			this.check_push(map, pos[0] + x, pos[1] - x, lst, 3, zone);
+			this.check_push(map, pos[0] - x, pos[1] - x, lst, 4, zone);
 		}
-		/* END */
-		/* DIAG */
-		diag(po, map, player){
-			let lst = [];
-			let pos = player.pos;
-			for (let x = po[0] + 1; x < po[1]; x++){
-				this.check_push(map, pos[0] + x, pos[1] + x, lst);
-				this.check_push(map, pos[0] - x, pos[1] + x, lst);
-				this.check_push(map, pos[0] + x, pos[1] - x, lst);
-				this.check_push(map, pos[0] - x, pos[1] - x, lst);
-			}
-			return (lst);
-		}
+		return (lst);
+	}
 }
 
 module.exports = {
-	Iop, Spell
+	Cra, Iop, Spell
 }

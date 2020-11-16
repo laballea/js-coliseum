@@ -1,4 +1,5 @@
 const { Iop } = require('./Iop.js')
+const { Cra } = require('./Iop.js')
 
 class pf{
     constructor (map, id) {
@@ -99,9 +100,6 @@ class pf{
         else
             return (undefined)
     }
-    echo_lol(){
-        console.log("olo");
-    }
     pathfinding(obj, player) {
         let start = player.bloc;
         start.gScore = 0;
@@ -149,10 +147,13 @@ class pf{
 class Player {
 	constructor(classe, log, pos, map, game_id) {
 		switch (classe){
-			case 'Iop':
-				this.classe = new Iop();
+			case 'Iop': {
+                this.classe = new Iop(); break ;}
+            case 'Cra' : {
+                this.classe = new Cra(); break ;}
         }
-        this.team;
+        log.team = game_id % 2 + 1;
+        this.team = log.team;
         this.dead = false;
 		this.pseudo = log.pseudo;
 		this.pos = pos;
@@ -171,6 +172,12 @@ class Player {
 	move (x, y) {
         this.bloc.isPers = undefined;
         this.pos = [x, y];
+        let diff = [this.bloc.pos[0] -  this.pos[0], this.bloc.pos[1] -  this.pos[1]];
+        this.get_rot(diff);    
+        // 0 1 = 3q_dos
+        // 1 0 = 3q_dos_flip
+        // -1 0 = 3q_face
+        // 0 -1 = 3q_face_flip
         this.bloc = this.map.t_map[x][y];
         this.bloc.isPers = this.game_id;
         this.pm -= 1;
@@ -186,6 +193,22 @@ class Player {
                 lst_enemys.push(lst[i].isPers);
         }
         return (lst_enemys);
+    }
+    eq_array(a, b){
+        for (var i = 0; i < a.length; ++i) {
+            if (a[i] !== b[i]) return false;
+          }
+          return true;
+    }
+    get_rot(diff) {
+        if (this.eq_array(diff, [0, 1]))
+           this.classe.rot = [0, 0];
+        else if (this.eq_array(diff, [1, 0]))
+            this.classe.rot = [0, 1];
+        else if (this.eq_array(diff, [-1, 0]))
+            this.classe.rot = [1, 0];
+        else if (this.eq_array(diff, [0, -1]))
+            this.classe.rot = [1, 1];
     }
 }
 

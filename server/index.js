@@ -4,7 +4,6 @@ const server = app.listen(process.env.PORT || 8000)
 const io = require('socket.io')(server)
 
 const { Game } = require('./game')
-const game = require('./game')
 const { Menu } = require('./game')
 const { Log } = require('./game')
 const { Player } = require('./players')
@@ -63,7 +62,10 @@ class User {
 	menu()
 	{
 		let id = this.log.id;
-		this.socket.emit('menu', this._menu, id);
+		if (this.log.key != undefined)
+			this.socket.emit('menu', games.get(this.log.key)[1], id);
+		else if (this.log.key == undefined)
+			this.socket.emit('menu', this._menu, id);
 		this.socket.on('rdy_to_host', () => {
 			this.log.key = rdm_key('CHAR', 6);
 			games.set(this.log.key, [undefined, this._menu]);
@@ -76,11 +78,19 @@ class User {
 			this._menu.type = type;
 			io.to(this.log.key).emit('change_type', type, this._menu);
 		});
+		this.socket.on('classe_choice', (data) => {
+			this.log.classe = data;
+			if (this.log.key)
+				io.to(this.log.key).emit('new_menu', games.get(this.log.key)[1]);
+			else
+				this.socket.emit("new_menu", this._menu);
+		});
 		this.socket.on('join_game', (data) =>{
 			this.log.key = data;
 			this.socket.join(data);
 			var lobby = games.get(this.log.key);
 			lobby[1].players[lobby[1].nb_player] = this.log;
+			this.log.team = (nb_player - 1) % 2 + 1;
 			lobby[1].nb_player++;
 			io.to(this.log.key).emit('new_menu', games.get(this.log.key)[1]);
 		});
@@ -98,8 +108,7 @@ class User {
 			this.game.nb_player = this._menu.nb_player;
 			games.get(this.log.key)[0] = this.game;
 			for (let i = 0; i < this._menu.nb_player; i++) {
-				//if (this._menu.type == "tvt")
-				this.game.players.push(new Player("Iop", this._menu.players[i], (this._menu.type == "tvt" ? this.game.tvt_pos[i] : this.game.ffa_pos[i]), this.game.map, i));
+				this.game.players.push(new Player(this._menu.players[i].classe, this._menu.players[i], (this._menu.type == "tvt" ? this.game.tvt_pos[i] : this.game.ffa_pos[i]), this.game.map, i));
 			}
 			io.to(this._menu.host_key).emit('rdy_to_launch');	
 		});
@@ -108,15 +117,33 @@ class User {
 			this.socket.emit('destroy_menu');
 		});
 	}
-	not_dead(game) {
-		let nb = 0;
+	does_win(game) {
+		let lst = [];
 		for (let i = 0; i < game.players.length; i++) {
 			if (game.players[i].dead == false)
-				nb++;
+				lst.push(game.players[i]);
 		}
-		return (nb);
+		if (lst.length == 0)
+			return (0);
+		if (this._menu.type == "ffa") {
+			if (lst.length == 1)
+				return ([this._menu.type, lst[0]]);
+			else
+				return (undefined);
+		}
+		else {
+			let tmp = undefined;
+			for (let i = 0; i < lst.length; i++) {
+				if (tmp == undefined)
+					tmp = lst[i].team;
+				if (tmp != lst[i].team)
+					return (undefined);
+			}
+			return ([this._menu.type, tmp]);
+		}
 	}
 	ft_died(enemys, game) {
+		let ret;
 		let lst = [];
 		for (let i = 0; i < enemys.length; i++) {
 			if (game.players[enemys[i]].dead == true) {
@@ -126,8 +153,8 @@ class User {
 		}
 		if ((lst.length > 0 ? lst : undefined) != undefined) {
 			io.to(game.key).emit('died', game, lst);
-			if (this.not_dead(game) <= 1)
-				io.to(game.key).emit('end_game');
+			if ((ret = this.does_win(game)) != undefined)
+				io.to(game.key).emit('end_game', ret);
 		}
 	}
 	ft_game(game, id)
@@ -184,26 +211,22 @@ class User {
 			{
 				game.players[id].reset();
 				let n = id;
-				while (game.nb_player > 1 && (game.players[n].dead == true || n == id)) {
-					n++;
-					if (n >= game.nb_player)
-						n = 0;
+				if (game.nb_player > 1) {
+					while ((game.players[n].dead == true || n == id)) {
+						n++;
+						if (n >= game.nb_player)
+							n = 0;
+					}
 				}
-				if (n == id) {
-					io.to(game.key).emit('end_game');
-				}
-				else {
-					game.current_player = game.players[n];
-					this.socket.emit('end_tour', game, id);
-				}
+				game.current_player = game.players[n];
+				this.socket.emit('end_tour', game, id);
 			}
 		});
 		this.socket.on('end_game', () =>{
-			io.to(game.key).emit('end_game');
+			io.to(game.key).emit('end_game', false);
 		});
-		this.socket.on('game_end', (data) =>{
-			this._menu.solo = true;
-			this._menu.key = undefined;
+		this.socket.on('game_end', () =>{
+			this._menu.solo = false;
 			this.socket.removeAllListeners();
 			this.menu();
 		});

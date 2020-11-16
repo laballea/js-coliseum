@@ -25,6 +25,7 @@ class Main extends Phaser.Scene {
 			this._menu.delete_menu();
         });
 		this.socket.on('new_menu', (data) =>{
+			console.log("ok");
 			this._menu.actualize(data);
 		});
 		this.socket.on('change_type', (type, state) => {
@@ -64,7 +65,7 @@ class Main extends Phaser.Scene {
 			let tmp = state.players[id];
 			if (id == this.player.id)
 			{
-				this.player.re_draw(this, this.map.img_bloc[tmp.pos[0]][tmp.pos[1]]);
+				this.player.re_draw(this, this.map.img_bloc[tmp.pos[0]][tmp.pos[1]], state);
 				this.hud.re_draw(state, this);
 			}
 			else
@@ -107,11 +108,18 @@ class Main extends Phaser.Scene {
 			   	}
             }
 		});
-		this.socket.on('end_game', () =>{
-			this.hud.destroy_all();
-			this.player.destroy_all();
-			this.map.destroy_all();
-			this.socket.emit('game_end', this._menu.state);
+		this.socket.on('end_game', (winners) =>{
+			let time = 0;
+			if (winners != false) {
+				this.hud.win(winners, this);
+				time = 2500;
+			}
+			setTimeout( () => {
+				this.hud.destroy_all();
+				this.player.destroy_all();
+				this.map.destroy_all();
+				this.socket.emit('game_end');
+			}, time);
 		});
     }
 	click_function(){

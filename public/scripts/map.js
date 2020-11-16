@@ -62,7 +62,7 @@ class Map{
     }
     draw_map(game)
     {
-        let largeur = this.state.windowX / 28;
+		let largeur = this.state.windowX / 28;
         let hauteur = this.state.windowY / 14;
         let tileWidthHalf = largeur * 0.5;
         let tileHeightQuarter = hauteur * 0.25;
