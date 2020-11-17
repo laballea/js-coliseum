@@ -1,13 +1,5 @@
 
 class Main extends Phaser.Scene {
-    socket;
-    map;
-	player;
-	aff;
-	path = [];
-	zone = [];
-	hud;
-	_menu;
     preload () {
 		this.scale.pageAlignHorizontally = true;
 		this.scale.pageAlignVertically = true;
@@ -180,7 +172,16 @@ class Main extends Phaser.Scene {
     {
     }
     constructor() {
-        super('Main')
+		super('Main')
+		this.socket;
+		this.map;
+		this.player;
+		this.aff;
+		this.path = [];
+		this.zone = [];
+		this.hud;
+		this._menu;
+		
     }
 }
 
