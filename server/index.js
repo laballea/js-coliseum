@@ -181,7 +181,7 @@ class User {
 		this.socket.on('attack', (obj) =>{
 			if (game.players[id].dead == false && game.current_player == game.players[id]) {
 				let enemys;
-				enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(obj, game.map));
+				enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(obj, game.map, game.players[id]));
 				if (game.players[id].classe.act_spell.do(game.players[id], enemys, game)) {
 					io.to(game.key).emit('attacked', game, game.players[id].classe.act_spell, enemys);
 					this.ft_died(enemys, game);

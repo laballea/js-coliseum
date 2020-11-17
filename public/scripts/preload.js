@@ -38,6 +38,10 @@ function load_cra(game) {
 	game.load.image('Cra_dos', 'asset/Cra/Cra_dos.png');
 	game.load.image('Cra_face', 'asset/Cra/Cra_face.png');
 	game.load.image('Cra_profil', 'asset/Cra/Cra_profil.png');
+	game.load.image('Cra_spell_0', 'asset/Cra/spell/0.png');
+	game.load.image('Cra_spell_1', 'asset/Cra/spell/1.png');
+	game.load.image('Cra_spell_2', 'asset/Cra/spell/2.png');
+	game.load.image('Cra_spell_3', 'asset/Cra/spell/3.png');
 }
 
 function load_iop(game) {
@@ -46,8 +50,9 @@ function load_iop(game) {
 	game.load.image('Iop_dos', 'asset/Iop/Iop_dos.png');
 	game.load.image('Iop_face', 'asset/Iop/Iop_face.png');
 	game.load.image('Iop_profil', 'asset/Iop/Iop_profil.png');
-	game.load.image('Iop_spell_0', 'asset/Iop/Iop_spell_0.png');
-	game.load.image('Iop_spell_1', 'asset/Iop/Iop_spell_1.png');
-	game.load.image('Iop_spell_2', 'asset/Iop/Iop_spell_2.png');
+	game.load.image('Iop_spell_0', 'asset/Iop/spell/0.png');
+	game.load.image('Iop_spell_1', 'asset/Iop/spell/1.png');
+	game.load.image('Iop_spell_2', 'asset/Iop/spell/2.png');
+	game.load.image('Iop_spell_3', 'asset/Iop/spell/3.png');
 }
 /*END*/
