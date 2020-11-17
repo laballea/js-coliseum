@@ -128,7 +128,7 @@ class Main extends Phaser.Scene {
 			}
 		});
 		var tmp = undefined;
-        this.input.on('gameobjectover', (pointer,gameObject) =>{
+        this.input.on('gameobjectover', (pointer, gameObject) =>{
 			if (gameObject.type == 1)
             {
 				let bloc = gameObject.data;
@@ -138,7 +138,7 @@ class Main extends Phaser.Scene {
 					this.socket.emit("previsu", bloc.data);
 			}
         });
-        this.input.on('gameobjectout', (pointer,gameObject) =>{
+        this.input.on('gameobjectout', (pointer, gameObject) =>{
 			if (gameObject.type == 1)
 			{
 				if (this.zone.length != 0)
