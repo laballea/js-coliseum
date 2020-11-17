@@ -170,6 +170,8 @@ class Player {
         this.on_move = false;
 	}
 	move (x, y) {
+        let pos = this.bloc.pos;
+        this.map.t_map[pos[0]][pos[1]].isPers = undefined;
         this.bloc.isPers = undefined;
         this.pos = [x, y];
         let diff = [this.bloc.pos[0] -  this.pos[0], this.bloc.pos[1] -  this.pos[1]];

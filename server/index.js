@@ -162,7 +162,6 @@ class User {
 		game.current_player = game.players[0];
 		this.socket.emit('stateChanged', game, id, 0);
 		this.socket.on('previsu', (data) =>{
-			console.log("previsu");
 			if (game.players[id].dead == false) {
 				if (game.players[id].classe.act_spell == undefined && game.players[id].on_move == false)
 					this.socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));

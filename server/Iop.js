@@ -27,9 +27,9 @@ class Iop{
 	}
 	init_spell(){
 		this.spells.push(new Spell("Colère de Iop", 0, "Iop_spell_0", [1, 1], true, 100, 6, 0, [0, [0, 0]]));
-		this.spells.push(new Spell("Epée du destructrice", 1, "Iop_spell_1", [1, 4], true, 50, 4, 1, [1, [0, 1], [[2, 4], [1, 3], [2, 4], [1, 3]], true]));
+		this.spells.push(new Spell("Epée destructrice", 1, "Iop_spell_1", [1, 4], true, 50, 4, 1, [1, [0, 1], [[2, 4], [1, 3], [2, 4], [1, 3]], true]));
 		this.spells.push(new Spell("Epee céléste", 2, "Iop_spell_2", [0, 4], true, 35, 4, 1, [0, [0, 2]]));
-		this.spells.push(new Spell("Epee divine", 3, "Iop_spell_3", [1, 10], false, 40, 4, 1, [1, [0, 3], [5], false]));
+		this.spells.push(new Spell("Epee de Iop", 3, "Iop_spell_3", [1, 10], false, 40, 4, 1, [1, [0, 3], [5], false]));
 	}
 }
 
@@ -49,6 +49,8 @@ class Cra{
 		this.spells.push(new Spell("Oeil de Taupe", 1, "Cra_spell_1", [5, 8], true, 25, 3, 0, [0, [0, 3]]));
 		this.spells.push(new Spell("Flèche harcelante", 2, "Cra_spell_2", [1, 7], false, 15, 3, 0, [0, [0, 0]]));
 		this.spells.push(new Spell("Flèche explosive", 3, "Cra_spell_3", [1, 8], true, 50, 4, 0, [0, [0, 2]]));
+		this.spells.push(new Spell("Epee de Iop", 4, "Iop_spell_3", [1, 10], false, 40, 4, 1, [1, [0, 3], [5], false]));
+
 	}
 }
 
@@ -198,14 +200,16 @@ class utils{
 	}
 	check_push(map, x, y, lst, id, bool, rel_pos){
 		if (map.t_map[x] && map.t_map[x][y] && map.t_map[x][y].type != 2) {
-			if (this.zone[0] == 0 || bool == false)
-				lst.push(map.t_map[x][y]);
-			else {
-				let tmp = this.zone[2];
-				if (this.zone[3])
-					tmp = this.zone[2][rel_pos];
-				if (tmp.find(ele => this.ajust(ele) === id) != undefined || this.zone[2][0] == 5) {
+			if (lst.find(ele => ele.id === map.t_map[x][y].id) == undefined) {
+				if (this.zone[0] == 0 || bool == false)
 					lst.push(map.t_map[x][y]);
+				else {
+					let tmp = this.zone[2];
+					if (this.zone[3])
+						tmp = this.zone[2][rel_pos];
+					if (tmp.find(ele => this.ajust(ele) === id) != undefined || this.zone[2][0] == 5) {
+						lst.push(map.t_map[x][y]);
+					}
 				}
 			}
 		}
