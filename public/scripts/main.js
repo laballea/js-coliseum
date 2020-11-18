@@ -17,8 +17,10 @@ class Main extends Phaser.Scene {
 			this._menu.delete_menu();
         });
 		this.socket.on('new_menu', (data) =>{
-			console.log("ok");
 			this._menu.actualize(data);
+		});
+		this.socket.on('game_not_found', (data) =>{
+			this._menu.game_not_found(data);
 		});
 		this.socket.on('change_type', (type, state) => {
 			this._menu.change_game_type(type, state);

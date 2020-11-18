@@ -65,7 +65,7 @@ class Menu{
 				this.grp.push(this.game.add.image(0.8 * this.state.windowX, 0.8 * this.state.windowY, "start_game_menu").setDisplaySize(200, 200).setInteractive().on('pointerdown', () => {
 					this.game.socket.emit('game_launch', name, i, this.state);
 				}));
-				break ;}
+				break }
 			case 'KEY' : {
 				this.grp.push(this.game.add.text(0.1 * this.state.windowX, 0.05 * this.state.windowY, "Host key : " + this.state.host_key, {
 					font: "20px Arial",
@@ -90,13 +90,14 @@ class Menu{
 						this.choice = "tvt";
 						this.game.socket.emit('type_choice', "tvt");
 					}
-				}));
+				}));break ;
 			}
 			case 'CROSS' : {
 				if (this.state.type == "tvt")
 					this.grp.push(this.choice_png = this.game.add.image(0.57 * this.state.windowX + 59, 0.7 * this.state.windowY, "cross_menu").setDisplaySize(150, 150));
 				else
 					this.grp.push(this.choice_png = this.game.add.image(0.43 * this.state.windowX + 59, 0.7 * this.state.windowY, "cross_menu").setDisplaySize(150, 150));
+				break ;
 			}
 			case 'CHOOSE_CLASSE' : {
 				for (let i = 0; i < this.state.classe.length; i++) {
@@ -106,6 +107,7 @@ class Menu{
 					}));
 					this.grp.push(this.game.add.image(posx * 0.9 + i * classe.dim[0] * 0.35, posy * 1.40, classe.file[3]).setDisplaySize(classe.dim[0] * 0.3, classe.dim[1] * 0.3));
 				}
+				break ;
 			}
 		}
 	}
@@ -146,11 +148,21 @@ class Menu{
 			this.grp[i].destroy();
 	}
 	actualize(state){
-		console.log(state);
 		this.delete_menu();
 		if (state)
 			this.state = state;
 		this.draw_menu();
+	}
+	game_not_found(data){
+		let tmp;
+		this.grp.push(tmp = this.game.add.text(0.5 * this.state.windowX, 0.1 * this.state.windowY, 'Game \'' + data + '\' doesn\'t exist', {
+			font: "20px Arial",
+			fill: "#FF0000",
+			align: "center"
+		}));
+		setTimeout(() => {
+			tmp.destroy();
+		}, 1500);
 	}
 	change_game_type(type, state) {
 		this.actualize(state)

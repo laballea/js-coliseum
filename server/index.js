@@ -86,13 +86,17 @@ class User {
 				this.socket.emit("new_menu", this._menu);
 		});
 		this.socket.on('join_game', (data) =>{
-			this.log.key = data;
-			this.socket.join(data);
-			var lobby = games.get(this.log.key);
-			lobby[1].players[lobby[1].nb_player] = this.log;
-			this.log.team = (nb_player - 1) % 2 + 1;
-			lobby[1].nb_player++;
-			io.to(this.log.key).emit('new_menu', games.get(this.log.key)[1]);
+			if (games.get(data) != undefined) {
+				this.log.key = data;
+				this.socket.join(data);
+				var lobby = games.get(this.log.key);
+				lobby[1].players[lobby[1].nb_player] = this.log;
+				this.log.team = (nb_player - 1) % 2 + 1;
+				lobby[1].nb_player++;
+				io.to(this.log.key).emit('new_menu', games.get(this.log.key)[1]);
+			}
+			else
+				this.socket.emit('game_not_found', data);
 		});
 		this.socket.on('edit_pseudo', (data, i, _menu) =>{
 			this.log.pseudo = data;
