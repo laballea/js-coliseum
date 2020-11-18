@@ -164,10 +164,11 @@ class User {
 		this.socket.on('azerty', () => {
 			this.socket.emit('qwerty');
 		});
-		this.socket.on('previsu', (data) =>{
+		this.socket.on('previsu', (pos) =>{
 			if (game.players[id].dead == false) {
-				if (game.players[id].classe.act_spell == undefined && game.players[id].on_move == false)
-					this.socket.emit('end_previsu', game.players[id].pf.pathfinding(data, game.players[id]));
+				if (game.players[id].classe.act_spell == undefined && game.players[id].on_move == false) {
+					this.socket.emit('end_previsu', game.players[id].pf.pathfinding(game.map.t_map[pos[0]][pos[1]], game.players[id]));
+				}
 			}
 		});
 		this.socket.on('spell_press', (spell_id) =>{
@@ -176,15 +177,17 @@ class User {
 					game.players[id].classe.spells[spell_id].al_show, game.players[id]);
 			}
 		});
-		this.socket.on('over_spell', (spell_id, obj)=> {
+		this.socket.on('over_spell', (spell_id, pos)=> {
 			if (game.players[id].dead == false) {
-				this.socket.emit('previsu_zone', game.players[id].classe.spells[spell_id].spell_zone(obj, game.map, game.players[id]));
+				let start = Date.now();
+				this.socket.emit('previsu_zone', game.players[id].classe.spells[spell_id].spell_zone(game.map.t_map[pos[0]][pos[1]], game.map, game.players[id]));
+				console.log(Date.now() - start);
 			}
 		});
-		this.socket.on('attack', (obj) =>{
+		this.socket.on('attack', (pos) =>{
 			if (game.players[id].dead == false && game.current_player == game.players[id]) {
 				let enemys;
-				enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(obj, game.map, game.players[id]));
+				enemys = game.players[id].get_enemy(game.players[id].classe.act_spell.spell_zone(game.map.t_map[pos[0]][pos[1]], game.map, game.players[id]));
 				if (game.players[id].classe.act_spell.do(game.players[id], enemys, game)) {
 					io.to(game.key).emit('attacked', game, game.players[id].classe.act_spell, enemys);
 					this.ft_died(enemys, game);

@@ -54,8 +54,9 @@ class Main extends Phaser.Scene {
             for (let i = 0; i < path.length; i++)
             {
                 this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
-                this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
-            }
+                //this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
+			}
+			this.move = true;
         });
         this.socket.on('change_pos', (state, id) =>{
 			let tmp = state.players[id];
@@ -123,7 +124,7 @@ class Main extends Phaser.Scene {
 			if (gameObject.type == 1)
             {
 				if (this.player.perso.classe.act_spell != undefined)
-					this.socket.emit("attack", gameObject.data.data)
+					this.socket.emit("attack", gameObject.data.data.pos)
 				else if (this.path.length != 0) {
 					this.socket.emit('move', this.path);
 					this.path = [];
@@ -136,9 +137,9 @@ class Main extends Phaser.Scene {
             {
 				let bloc = gameObject.data;
 				if (this.player.perso.classe.act_spell != undefined)
-					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data);
-				else if (this.path.length == 0)
-					this.socket.emit("previsu", bloc.data);
+					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data.pos);
+				else if (this.move == false)
+					this.socket.emit("previsu", bloc.data.pos);
 			}
         });
         this.input.on('gameobjectout', (pointer, gameObject) =>{
@@ -149,11 +150,13 @@ class Main extends Phaser.Scene {
 					for (let i = 0; i < this.zone.length; i++)
 						this.zone[i].img.tint = this.zone[i].tint;
 					this.zone = [];
-				}	
-				if (this.path.length != 0)
+				}
+				if (this.move == true)
 				{
-					for (let i = 0; i < this.path.length; i++)
-						this.path[i].img.tint = undefined;
+					this.map.reset_tint();
+					this.move = false;
+					/*for (let i = 0; i < this.path.length; i++)
+						this.path[i].img.tint = undefined;*/
 					this.path = [];
 					}
 				}
@@ -180,6 +183,7 @@ class Main extends Phaser.Scene {
     }
     constructor() {
 		super('Main')
+		this.move = false;
 		this.startTime;
 		this.socket;
 		this.map;
