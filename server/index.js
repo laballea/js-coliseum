@@ -183,9 +183,7 @@ class User {
 		});
 		this.socket.on('over_spell', (spell_id, pos)=> {
 			if (game.players[id].dead == false) {
-				let start = Date.now();
 				this.socket.emit('previsu_zone', game.players[id].classe.spells[spell_id].spell_zone(game.map.t_map[pos[0]][pos[1]], game.map, game.players[id]));
-				console.log(Date.now() - start);
 			}
 		});
 		this.socket.on('attack', (pos) =>{

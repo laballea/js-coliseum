@@ -28,7 +28,6 @@ class Perso{
 	}
 	re_draw_enemy(state, game){
 		this.update_data(state);
-		console.log(state);
 		for (let i = 0; i < this.img_enemy.length; i++)
 			this.img_enemy[i].destroy();
 		this.draw_enemy(game);

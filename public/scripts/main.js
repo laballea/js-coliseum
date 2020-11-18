@@ -85,11 +85,11 @@ class Main extends Phaser.Scene {
 			this.aff.display_dmg(spell, enemys, game, this);
 		});
 		this.socket.on('previsu_zone', (zone) =>{
-            if (zone == undefined)
-				return ;
 			for (let i = 0; i < this.zone.length; i++)
 				this.zone[i].img.tint = this.zone[i].tint;
 			this.zone = [];
+            if (zone == undefined)
+				return ;
 			for (let i = 0; i < zone.length; i++)
 			{
 				let bloc =  this.map.img_bloc[zone[i].posx][zone[i].posy];
@@ -101,11 +101,11 @@ class Main extends Phaser.Scene {
             }
 		});
 		this.socket.on('end_previsu', (path) =>{
-            if (path == undefined)
-				return ;
 			for (let i = 0; i < this.path.length; i++)
 				this.path[i].img.tint = undefined;
 			this.path = [];
+            if (path == undefined)
+				return ;
             for (let i = 0; i < path.length; i++)
             {
                 this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
