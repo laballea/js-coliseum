@@ -167,7 +167,9 @@ class User {
 		this.socket.on('previsu', (pos) =>{
 			if (game.players[id].dead == false) {
 				if (game.players[id].classe.act_spell == undefined && game.players[id].on_move == false) {
+					let start = Date.now();
 					this.socket.emit('end_previsu', game.players[id].pf.pathfinding(game.map.t_map[pos[0]][pos[1]], game.players[id]));
+					console.log(Date.now() - start);
 				}
 			}
 		});

@@ -51,11 +51,10 @@ class Main extends Phaser.Scene {
         this.socket.on('end_previsu', (path) =>{;
             if (path == undefined)
 				return ;
-			this.path = path;
             for (let i = 0; i < path.length; i++)
             {
                 this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
-                //this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
+                this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
             }
         });
         this.socket.on('change_pos', (state, id) =>{
@@ -154,9 +153,7 @@ class Main extends Phaser.Scene {
 				if (this.path.length != 0)
 				{
 					for (let i = 0; i < this.path.length; i++) {
-						console.log(this.path[i]);
-						this.map.img_bloc[this.path[i][0]][this.path[i][1]].img.tint = undefined;
-						//this.path[i].img.tint = undefined;
+						this.path[i].img.tint = undefined;
 					}
 					this.path = [];
 				}
