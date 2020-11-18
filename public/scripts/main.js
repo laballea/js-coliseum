@@ -49,7 +49,6 @@ class Main extends Phaser.Scene {
 				this.map.reset_tint();
         });
         this.socket.on('end_previsu', (path) =>{
-			console.log("ok1");
             if (path == undefined) {
 				this.move_pre = false;
 				return ;}
@@ -129,6 +128,7 @@ class Main extends Phaser.Scene {
 				else if (this.path.length != 0) {
 					this.socket.emit('move', this.path);
 					this.path = [];
+					this.move_pre = false;
 					this.map.reset_tint();
 				}
 			}
@@ -139,8 +139,9 @@ class Main extends Phaser.Scene {
 				let bloc = gameObject.data;
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data.pos);
-				else if (this.path.length == 0 && this.move_pre == false) {
-					console.log("ok")
+				else if (this.move_pre == false) {
+					for (let i = 0; i < this.path.length; i++)
+						this.path[i].img.tint = undefined;
 					this.socket.emit("previsu", bloc.data.pos);
 					this.move_pre = true;
 				}
@@ -157,7 +158,6 @@ class Main extends Phaser.Scene {
 				}
 				if (this.path.length != 0 && this.move_pre == true)
 				{
-					console.log("ok2")
 					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
 					this.path = [];
