@@ -85,6 +85,9 @@ class Main extends Phaser.Scene {
 		this.socket.on('previsu_zone', (zone) =>{
             if (zone == undefined)
 				return ;
+			for (let i = 0; i < this.zone.length; i++)
+				this.zone[i].img.tint = this.zone[i].tint;
+			this.zone = [];
 			for (let i = 0; i < zone.length; i++)
 			{
 				let bloc =  this.map.img_bloc[zone[i].posx][zone[i].posy];
@@ -145,7 +148,7 @@ class Main extends Phaser.Scene {
 				}
 			}
         });
-        this.input.on('gameobjectout', (pointer, gameObject) =>{
+        /*this.input.on('gameobjectout', (pointer, gameObject) =>{
 			if (gameObject.type == 1)
 			{
 				if (this.zone.length != 0)
@@ -154,14 +157,14 @@ class Main extends Phaser.Scene {
 						this.zone[i].img.tint = this.zone[i].tint;
 					this.zone = [];
 				}
-				/*if (this.path.length != 0)
+				if (this.path.length != 0)
 				{
 					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
 					this.path = [];
 
-				}*/
-			}});
+				}
+			}});*/
 	}
 	menu(state, id) {
 		this._menu = new Menu(state, this, id);
