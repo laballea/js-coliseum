@@ -137,9 +137,9 @@ class Main extends Phaser.Scene {
 				let bloc = gameObject.data;
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data.pos);
-				else if (this.path.length == 0) {
+				else if (this.path.length == 0 && this.move_pre == false) {
 					this.socket.emit("previsu", bloc.data.pos);
-					this.path = [];
+					this.move_pre = true;
 				}
 			}
         });
@@ -157,6 +157,7 @@ class Main extends Phaser.Scene {
 					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
 					this.path = [];
+					this.move_pre = false;
 				}
 			}});
 	}
@@ -181,6 +182,7 @@ class Main extends Phaser.Scene {
     }
     constructor() {
 		super('Main')
+		this.move_pre = false;
 		this.startTime;
 		this.socket;
 		this.map;
