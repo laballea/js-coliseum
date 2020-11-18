@@ -56,7 +56,8 @@ class Main extends Phaser.Scene {
             {
                 this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
                 this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
-            }
+			}
+			this.move_pre = false;
         });
         this.socket.on('change_pos', (state, id) =>{
 			let tmp = state.players[id];
@@ -156,13 +157,13 @@ class Main extends Phaser.Scene {
 						this.zone[i].img.tint = this.zone[i].tint;
 					this.zone = [];
 				}
-				if (this.path.length != 0 && this.move_pre == true)
+				/*if (this.path.length != 0 && this.move_pre == true)
 				{
 					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
 					this.path = [];
 					this.move_pre = false;
-				}
+				}*/
 			}});
 	}
 	menu(state, id) {
