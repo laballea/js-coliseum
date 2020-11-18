@@ -82,17 +82,6 @@ class Main extends Phaser.Scene {
 			this.hud.re_draw(game, this);
 			this.aff.display_dmg(spell, enemys, game, this);
 		});
-		this.socket.on('end_previsu', (path) =>{
-            if (path == undefined) {
-				this.move_pre = false;
-				return ;}
-            for (let i = 0; i < path.length; i++)
-            {
-                this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
-                this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
-			}
-			this.move_pre = false;
-        });
 		this.socket.on('previsu_zone', (zone) =>{
             if (zone == undefined)
 				return ;
@@ -106,6 +95,18 @@ class Main extends Phaser.Scene {
 			   	}
             }
 		});
+		this.socket.on('end_previsu', (path) =>{
+            if (path == undefined)
+				return ;
+			for (let i = 0; i < this.path.length; i++)
+				this.path[i].img.tint = undefined;
+			this.path = [];
+            for (let i = 0; i < path.length; i++)
+            {
+                this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
+                this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
+            }
+        });
 		this.socket.on('end_game', (winners) =>{
 			let time = 0;
 			if (winners != false) {
@@ -129,7 +130,6 @@ class Main extends Phaser.Scene {
 				else if (this.path.length != 0) {
 					this.socket.emit('move', this.path);
 					this.path = [];
-					this.move_pre = false;
 					this.map.reset_tint();
 				}
 			}
@@ -140,11 +140,7 @@ class Main extends Phaser.Scene {
 				let bloc = gameObject.data;
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data.pos);
-				else if (this.move_pre == false) {
-					for (let i = 0; i < this.path.length; i++)
-						this.path[i].img.tint = undefined;
-					this.path = [];
-					this.move_pre = true;
+				else {
 					this.socket.emit("previsu", bloc.data.pos);
 				}
 			}
@@ -158,12 +154,12 @@ class Main extends Phaser.Scene {
 						this.zone[i].img.tint = this.zone[i].tint;
 					this.zone = [];
 				}
-				/*if (this.path.length != 0 && this.move_pre == true)
+				/*if (this.path.length != 0)
 				{
 					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
 					this.path = [];
-					this.move_pre = false;
+
 				}*/
 			}});
 	}
@@ -188,7 +184,6 @@ class Main extends Phaser.Scene {
     }
     constructor() {
 		super('Main')
-		this.move_pre = false;
 		this.startTime;
 		this.socket;
 		this.map;
