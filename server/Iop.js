@@ -29,7 +29,7 @@ class Iop{
 		this.spells.push(new Spell("Colère de Iop", 0, "Iop_spell_0", [1, 1], true, 100, 6, 0, [0, [0, 0]]));
 		this.spells.push(new Spell("Epée destructrice", 1, "Iop_spell_1", [1, 4], true, 50, 4, 1, [1, [0, 1], [[2, 4], [1, 3], [2, 4], [1, 3]], true]));
 		this.spells.push(new Spell("Epee céléste", 2, "Iop_spell_2", [0, 4], true, 35, 4, 1, [0, [0, 2]]));
-		this.spells.push(new Spell("Epee de Iop", 3, "Iop_spell_3", [1, 10], false, 40, 4, 1, [1, [0, 3], [5], false]));
+		this.spells.push(new Spell("Epee de Iop", 3, "Iop_spell_3", [1, 10], true, 40, 4, 1, [1, [0, 3], [5], false]));
 	}
 }
 

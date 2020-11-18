@@ -6,7 +6,9 @@ class Menu{
 		this.game = game;
 		this.choice = undefined;
 		this.choice_png;
+		this.help = false;
 		this.grp = new Array();
+		this.img_help = new Array();
 		this.draw_menu();
 	}
 	draw_menu() {
@@ -109,6 +111,47 @@ class Menu{
 				}
 				break ;
 			}
+			case 'HELP' : {
+				this.grp.push(this.game.add.image(0.02 * this.state.windowX, 0.95 * this.state.windowY, "help").setInteractive().on('pointerdown', () => {
+					console.log(this.help);
+					if (this.help == false) {
+						
+					this.img_help.push(this.game.add.rectangle(0.3 * this.state.windowX, 0.8 * this.state.windowY, 0.5 * this.state.windowX, 0.25 * this.state.windowY, 0xC0C0C0));
+					this.img_help.push(this.game.add.image(0.07 * this.state.windowX, 0.71 * this.state.windowY, "host_game_menu").setDisplaySize(50, 50));
+					this.img_help.push(this.game.add.text(0.09 * this.state.windowX, 0.705 * this.state.windowY, "Allow you to host game, wich create Host Key. (example : ABCDEF)", {
+						font: "bold 12px Arial",
+						fill: "#000000",
+						align: "left"
+					}));
+					this.img_help.push(this.game.add.image(0.07 * this.state.windowX, 0.74 * this.state.windowY, "join_game_menu").setDisplaySize(50, 50));
+					this.img_help.push(this.game.add.text(0.09 * this.state.windowX, 0.735 * this.state.windowY, "Allow you to join game, if you have the Host Key. (example : ABCDEF)", {
+						font: "bold 12px Arial",
+						fill: "#000000",
+						align: "left"
+					}));
+					this.img_help.push(this.game.add.image(0.07 * this.state.windowX, 0.77 * this.state.windowY, "start_game_menu").setDisplaySize(50, 50));
+					this.img_help.push(this.game.add.text(0.09 * this.state.windowX, 0.765 * this.state.windowY, "If you are the one who host, you will have the privilege to start the game.", {
+						font: "bold 12px Arial",
+						fill: "#000000",
+						align: "left"
+					}));
+					let classe = this.state.classe[0];
+					this.img_help.push(this.game.add.image(0.07 * this.state.windowX, 0.82 * this.state.windowY, classe.file[3]).setDisplaySize(classe.dim[0] * 0.25, classe.dim[1] * 0.25));
+					this.img_help.push(this.game.add.text(0.09 * this.state.windowX, 0.815 * this.state.windowY, "Your character, you can choose it below.", {
+						font: "bold 12px Arial",
+						fill: "#000000",
+						align: "left"
+					}));
+					this.help = true;
+				}
+				else {
+					for (let i = 0; i < this.img_help.length; i++)
+						this.img_help[i].destroy();
+					this.help = false;
+				}
+			}));
+				break ;
+			}
 		}
 	}
 	multiple() {
@@ -121,6 +164,7 @@ class Menu{
 			this.grp.push(this.game.add.image(0.57 * this.state.windowX, 0.7 * this.state.windowY, "tvt_choice_menu").setDisplaySize(175, 175));
 		}
 		this.draw('CROSS', 0, this.state.admin);
+		this.draw('HELP', 0, this.state.admin);
 		for (let i = 0; i < this.state.nb_player; i++) {
 			this.draw("PLAY_CARD", i, this.state.players[i]);
 			this.draw("SKIN", i, this.state.players[i]);
@@ -142,10 +186,14 @@ class Menu{
 		this.draw("SKIN", 0, this.state.admin);
 		this.draw("PEN_EDIT", 0, this.state.admin);
 		this.draw("PSEUDO", 0, this.state.admin);
+		this.draw('HELP', 0, this.state.admin);
 	}
 	delete_menu(){
 		for (let i = 0; i < this.grp.length; i++)
 			this.grp[i].destroy();
+		for (let i = 0; i < this.img_help.length; i++)
+			this.img_help[i].destroy();
+		this.help = false;
 	}
 	actualize(state){
 		this.delete_menu();
@@ -167,4 +215,13 @@ class Menu{
 	change_game_type(type, state) {
 		this.actualize(state)
 	}
+	ping(latency, game) {
+        if (this.ping_img != undefined)
+            this.ping_img.destroy();
+        this.grp.push(this.ping_img = game.add.text(this.state.windowX * 0.95, this.state.windowY * 0.05, "Ping : " + latency + "ms", {
+            font: "bold 12px Arial",
+            fill: "#E7E4E3",
+            align: "center"
+        }));
+    }
 }

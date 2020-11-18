@@ -21,6 +21,7 @@ function load_menu(game) {
 	game.load.image('tvt_choice_menu', 'asset/menu_png/tvt_choice.png');
 	game.load.image('ffa_choice_menu', 'asset/menu_png/ffa_choice.png');
 	game.load.image('cross_menu', 'asset/menu_png/cross.png');
+	game.load.image('help', 'asset/menu_png/menu_help.png');
 }
 
 function load_map(game) {

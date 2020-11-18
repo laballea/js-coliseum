@@ -43,6 +43,21 @@ class Menu {
 	}
 	windowX = 1600
 	windowY = 900
+	disconnected(id) {
+		for (let i = 0; i < this.players.length; i++) {
+			if (this.players[i] != undefined && this.players[i].id == id)
+				this.players[i] = undefined;
+		}
+		for (let i = 0; i < this.players.length; i++) {
+			if (this.players[i] != undefined && i != 0 && this.players[i - 1] == undefined) {
+				this.players[i - 1] = this.players[i];
+				this.players[i] = undefined;
+			}
+		}
+		this.nb_player--;
+		if (this.nb_player == 1)
+			this.solo = true;
+	}
 }
 
 class Log {

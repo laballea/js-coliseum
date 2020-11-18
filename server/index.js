@@ -7,18 +7,12 @@ const { Game } = require('./game')
 const { Menu } = require('./game')
 const { Log } = require('./game')
 const { Player } = require('./players')
+var games = new Map();
 
 let nb_player = 0;
 app.use(express.static('public'))
 io.on('connection', (socket) => {
 	console.log('a user connected')
-	let inter = setInterval(() =>{
-		if (socket.disconnected)
-		{
-			socket.removeAllListeners();
-			clearInterval(inter);
-		}
-	}, 1000);
 	load_game(socket)
 });
 
@@ -44,7 +38,6 @@ function rdm_key(type, length) {
 	return (key);
 }
 
-var games = new Map();
 class User {
 	constructor(log, socket) {
 		this.log = log;
@@ -59,8 +52,37 @@ class User {
 				return (i);
 		}
 	}
+	disconnected() {
+		let inter = setInterval(() =>{
+			if (this.socket.disconnected)
+			{
+				console.log('a user disconnected')
+				nb_player--;
+				if (this.log.key && games.get(this.log.key) != undefined) {
+					io.to(this.log.key).emit('disconnected', (this.log));
+					if (games.get(this.log.key)[1].admin.id == this.log.id) {
+						games.delete(this.log.key);
+						io.to(this.log.key).emit('game_delete');
+					}
+					else {
+						games.get(this.log.key)[1].disconnected(this.log.id);
+						io.to(this.log.key).emit('new_menu', games.get(this.log.key)[1]);
+					}
+				}
+				this.socket.removeAllListeners();
+				clearInterval(inter);
+			}
+		}, 1000);
+		this.socket.on('game_delete', () => {
+			this._menu.solo = true;
+			this.log.key = undefined;
+			this.socket.removeAllListeners();
+			this.menu();
+		});
+	}
 	menu()
 	{
+		this.disconnected();
 		let id = this.log.id;
 		if (this.log.key != undefined)
 			this.socket.emit('menu', games.get(this.log.key)[1], id);
@@ -120,6 +142,10 @@ class User {
 			this.ft_game(games.get(this.log.key)[0], this.games_id(games.get(this.log.key)[0]));
 			this.socket.emit('destroy_menu');
 		});
+		this.socket.on('ping', () => {
+			console.log("pong")
+			this.socket.emit('pong');
+		});
 	}
 	does_win(game) {
 		let lst = [];
@@ -165,9 +191,6 @@ class User {
 	{
 		game.current_player = game.players[0];
 		this.socket.emit('stateChanged', game, id, 0);
-		this.socket.on('azerty', () => {
-			this.socket.emit('qwerty');
-		});
 		this.socket.on('previsu', (pos) =>{
 			if (game.players[id].dead == false) {
 				if (game.players[id].classe.act_spell == undefined && game.players[id].on_move == false) {
