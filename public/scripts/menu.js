@@ -218,10 +218,10 @@ class Menu{
 	ping(latency, game) {
         if (this.ping_img != undefined)
             this.ping_img.destroy();
-        this.grp.push(this.ping_img = game.add.text(this.state.windowX * 0.95, this.state.windowY * 0.05, "Ping : " + latency + "ms", {
+       this.ping_img = game.add.text(this.state.windowX * 0.95, this.state.windowY * 0.05, "Ping : " + latency + "ms", {
             font: "bold 12px Arial",
             fill: "#E7E4E3",
             align: "center"
-        }));
+        });
     }
 }

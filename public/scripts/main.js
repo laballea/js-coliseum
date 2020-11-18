@@ -49,10 +49,6 @@ class Main extends Phaser.Scene {
 				this.socket.emit('game_end');
 			}, 3000);
 		});
-		this.socket.on('pong', () =>{
-			let latency = Date.now() - this.startTime;
-			this._menu.ping(latency, this);
-		});
 		this.socket_menu_handler();
         this.socket.on('stateChanged', (state, id) =>{
             this.build(state, id);
@@ -137,6 +133,11 @@ class Main extends Phaser.Scene {
 				this.socket.emit('game_end');
 			}, time);
 		});
+		this.socket.on('PONG', () =>{
+			this.ping = true;
+			let latency = Date.now() - this.startTime;
+			this._menu.ping(latency, this);
+		});
     }
 	click_function(){
 		this.input.on('gameobjectdown', (pointer,gameObject) =>{
@@ -165,11 +166,12 @@ class Main extends Phaser.Scene {
 	}
 	menu(state, id) {
 		this._menu = new Menu(state, this, id);
-		
 		setInterval( () => {
-			console.log("okkk")
-			this.startTime = Date.now();
-			this.socket.emit('ping');
+			if (this.ping == true) {
+				this.startTime = Date.now();
+				this.socket.emit('PING');
+				this.ping = false;
+			}
 		}, 2000);
 	}
     build(state, id) {
@@ -187,6 +189,7 @@ class Main extends Phaser.Scene {
     }
     constructor() {
 		super('Main')
+		this.ping = true;
 		this.startTime;
 		this.socket;
 		this.map;

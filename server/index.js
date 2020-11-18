@@ -120,6 +120,9 @@ class User {
 			else
 				this.socket.emit('game_not_found', data);
 		});
+		this.socket.on('PING', () => {
+			this.socket.emit('PONG');
+		});
 		this.socket.on('edit_pseudo', (data, i, _menu) =>{
 			this.log.pseudo = data;
 			if (this.log.key)
@@ -141,10 +144,6 @@ class User {
 		this.socket.on('rdy_to_launch', () => {
 			this.ft_game(games.get(this.log.key)[0], this.games_id(games.get(this.log.key)[0]));
 			this.socket.emit('destroy_menu');
-		});
-		this.socket.on('ping', () => {
-			console.log("pong")
-			this.socket.emit('pong');
 		});
 	}
 	does_win(game) {
