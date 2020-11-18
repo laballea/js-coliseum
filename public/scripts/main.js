@@ -35,6 +35,10 @@ class Main extends Phaser.Scene {
 	}
     create () {
 		this.socket = io();
+		this.socket.on('qwerty', () =>{
+			let latency = Date.now() - this.startTime;
+			this.hud.ping(latency, this);
+		});
 		this.socket_menu_handler();
         this.socket.on('stateChanged', (state, id) =>{
             this.build(state, id);
@@ -127,7 +131,6 @@ class Main extends Phaser.Scene {
 				}
 			}
 		});
-		var tmp = undefined;
         this.input.on('gameobjectover', (pointer, gameObject) =>{
 			if (gameObject.type == 1)
             {
@@ -167,12 +170,17 @@ class Main extends Phaser.Scene {
 		this.hud = new HUD(state, id);
 		this.hud.draw_hud(this);
 		this.click_function();
+		setInterval( () => {
+			this.startTime = Date.now();
+			this.socket.emit('azerty');
+		}, 2000);
     }
     update ()
     {
     }
     constructor() {
 		super('Main')
+		this.startTime;
 		this.socket;
 		this.map;
 		this.player;
