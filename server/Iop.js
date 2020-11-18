@@ -105,10 +105,8 @@ class Spell{
 			return(3);
 	}
 	spell_zone(obj, map, player){
-		let path = [];
-		let zone = undefined;
-		for (let i = 0; i < this.see_range.length; i++){
-			if (this.see_range[i].id == obj.id){
+		let zone = [];
+		if (this.see_range.find(ele => ele.id === obj.id) != undefined) {
 				let rel_pos = this.get_rel_pos(obj.pos[0] - player.pos[0], obj.pos[1] - player.pos[1]);
 				if (this.zone[0] == 0)
 					zone = this.utils.cercle(this.zone[1], map, obj);
@@ -116,12 +114,9 @@ class Spell{
 					zone = this.utils.ligne(this.zone[1], map, obj, true, rel_pos);
 				else if (this.zone[0] == 2)
 					zone = this.utils.diag(this.zone[1], map, obj, true, rel_pos);
-				for (let i = 0; i < zone.length; i++)
-					path.push(zone[i]);
-				return (path);
-			}
+				return (zone);
 		}
-		return (path);
+		return (zone);
 	}
 	does_see(pos, obj, player){
 		let pos_obj = [obj.posx, obj.posy];
