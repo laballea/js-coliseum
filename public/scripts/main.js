@@ -148,23 +148,6 @@ class Main extends Phaser.Scene {
 				}
 			}
         });
-        /*this.input.on('gameobjectout', (pointer, gameObject) =>{
-			if (gameObject.type == 1)
-			{
-				if (this.zone.length != 0)
-				{
-					for (let i = 0; i < this.zone.length; i++)
-						this.zone[i].img.tint = this.zone[i].tint;
-					this.zone = [];
-				}
-				if (this.path.length != 0)
-				{
-					for (let i = 0; i < this.path.length; i++)
-						this.path[i].img.tint = undefined;
-					this.path = [];
-
-				}
-			}});*/
 	}
 	menu(state, id) {
 		this._menu = new Menu(state, this, id);

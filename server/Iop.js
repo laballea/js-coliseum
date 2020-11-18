@@ -49,8 +49,6 @@ class Cra{
 		this.spells.push(new Spell("Oeil de Taupe", 1, "Cra_spell_1", [5, 8], true, 25, 3, 0, [0, [0, 3]]));
 		this.spells.push(new Spell("Flèche harcelante", 2, "Cra_spell_2", [1, 7], false, 15, 3, 0, [0, [0, 0]]));
 		this.spells.push(new Spell("Flèche explosive", 3, "Cra_spell_3", [1, 8], true, 50, 4, 0, [0, [0, 2]]));
-		this.spells.push(new Spell("Epee de Iop", 4, "Iop_spell_3", [1, 10], false, 40, 4, 1, [1, [0, 3], [5], false]));
-
 	}
 }
 
