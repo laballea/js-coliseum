@@ -48,17 +48,6 @@ class Main extends Phaser.Scene {
 			if (lst.find(ele => ele === this.player.id) != undefined)
 				this.map.reset_tint();
         });
-        this.socket.on('end_previsu', (path) =>{
-            if (path == undefined) {
-				this.move_pre = false;
-				return ;}
-            for (let i = 0; i < path.length; i++)
-            {
-                this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
-                this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
-			}
-			this.move_pre = false;
-        });
         this.socket.on('change_pos', (state, id) =>{
 			let tmp = state.players[id];
 			if (id == this.player.id)
@@ -93,6 +82,17 @@ class Main extends Phaser.Scene {
 			this.hud.re_draw(game, this);
 			this.aff.display_dmg(spell, enemys, game, this);
 		});
+		this.socket.on('end_previsu', (path) =>{
+            if (path == undefined) {
+				this.move_pre = false;
+				return ;}
+            for (let i = 0; i < path.length; i++)
+            {
+                this.map.img_bloc[path[i][0]][path[i][1]].img.tint = 0x007700;
+                this.path.push(this.map.img_bloc[path[i][0]][path[i][1]]);
+			}
+			this.move_pre = false;
+        });
 		this.socket.on('previsu_zone', (zone) =>{
             if (zone == undefined)
 				return ;
@@ -143,8 +143,9 @@ class Main extends Phaser.Scene {
 				else if (this.move_pre == false) {
 					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
-					this.socket.emit("previsu", bloc.data.pos);
+					this.path = [];
 					this.move_pre = true;
+					this.socket.emit("previsu", bloc.data.pos);
 				}
 			}
         });
