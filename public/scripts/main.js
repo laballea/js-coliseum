@@ -137,8 +137,10 @@ class Main extends Phaser.Scene {
 				let bloc = gameObject.data;
 				if (this.player.perso.classe.act_spell != undefined)
 					this.socket.emit("over_spell", this.player.perso.classe.act_spell.id, bloc.data.pos);
-				else if (this.path.length == 0)
+				else if (this.path.length == 0) {
 					this.socket.emit("previsu", bloc.data.pos);
+					this.path = [];
+				}
 			}
         });
         this.input.on('gameobjectout', (pointer, gameObject) =>{
@@ -152,9 +154,8 @@ class Main extends Phaser.Scene {
 				}
 				if (this.path.length != 0)
 				{
-					for (let i = 0; i < this.path.length; i++) {
+					for (let i = 0; i < this.path.length; i++)
 						this.path[i].img.tint = undefined;
-					}
 					this.path = [];
 				}
 			}});
