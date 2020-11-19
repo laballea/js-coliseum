@@ -3,6 +3,24 @@ const app = express()
 const server = app.listen(process.env.PORT || 8000)
 const io = require('socket.io')(server)
 
+/////////////
+var path = require('path');
+var router = express.Router();
+var phpExpress = require('php-express')({
+    binPath: 'php'
+});
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
+app.use('/', express.static(__dirname));
+
+app.set('views', path.join(__dirname, '/views'));
+app.engine('php', phpExpress.engine);
+app.set('view engine', 'php');
+
+app.all(/.+\.php$/, phpExpress.router);
+
+///////////////////////////
 const { Game } = require('./game')
 const { Menu } = require('./game')
 const { Log } = require('./game')

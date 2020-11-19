@@ -165,6 +165,14 @@ class Main extends Phaser.Scene {
         });
 	}
 	menu(state, id) {
+		let xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			if (this.readyState === 4 && this.status === 200) {
+				console.log(this.responseText);
+			}
+		}
+		xhttp.open('GET', 'file.php?name=jerry', true);
+		xhttp.send();
 		this._menu = new Menu(state, this, id);
 		setInterval( () => {
 			if (this.ping == true) {
